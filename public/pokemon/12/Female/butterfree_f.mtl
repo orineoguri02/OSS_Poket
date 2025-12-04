@@ -1,0 +1,104 @@
+newmtl lambert1
+ illum 2
+ Ka 0 0 0
+ Kd 0.1254902 0.2784314 0.5960785
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl lambert10
+ illum 2
+ Ka 0 0 0
+ Kd 0.1254902 0.2784314 0.5960785
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl lambert11
+ illum 2
+ Ka 0 0 0
+ Kd 0.1254902 0.2784314 0.5960785
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl bata_shiro_1_1_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_RGB565.png
+newmtl bata_shiro_1_2_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_RGB565.png
+newmtl bata_shiro_1_3_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_2_RGB565.png
+newmtl bata_shiro_1_4_1
+ illum 2
+ Ka 0 0 0
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+newmtl bata_shiro_1_5_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_CMP.png
+newmtl bata_shiro_1_6_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_4_RGB565.png
+newmtl bata_shiro_1_7_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_5_RGB565.png
+newmtl mat1_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_6_CMP.png
+newmtl mat2_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_7_RGB565.png
