@@ -139,7 +139,6 @@ export default function Detail() {
   const info = pokemonDetails[numericId] || {
     nameKo: `포켓몬 No.${paddedId}`,
     nameEn: "Unknown",
-    badges: ["스칼렛", "바이올렛"],
     description: "아직 데이터가 등록되지 않았어요. 곧 업데이트될 예정입니다.",
     types: ["???"],
     height: "-",
@@ -369,34 +368,6 @@ export default function Detail() {
               >
                 {info.nameEn}
               </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: "clamp(8px, 1.5vw, 12px)",
-                  flexWrap: "wrap",
-                  marginBottom: "clamp(16px, 2.5vw, 20px)",
-                  width: "100%",
-                }}
-              >
-                {info.badges.map((badge) => (
-                  <span
-                    key={badge}
-                    style={{
-                      padding: "clamp(6px, 1vw, 8px) clamp(12px, 2vw, 16px)",
-                      borderRadius: "999px",
-                      backgroundColor:
-                        badge === "스칼렛" ? "#dc2626" : "#4c1d95",
-                      color: "#fff",
-                      fontSize: "clamp(11px, 1.5vw, 13px)",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {badge}
-                  </span>
-                ))}
-              </div>
 
               <p
                 style={{
