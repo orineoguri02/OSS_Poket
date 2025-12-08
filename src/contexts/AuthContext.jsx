@@ -1,24 +1,25 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // 페이지 로드 시 localStorage에서 사용자 정보 복원
-  useEffect(() => {
+  // localStorage를 먼저 읽어서 초기 상태로 설정 (깜빡임 방지)
+  const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("pokemon_user");
     if (savedUser) {
       try {
-        setUser(JSON.parse(savedUser));
+        return JSON.parse(savedUser);
       } catch (error) {
         console.error("사용자 정보 복원 실패:", error);
         localStorage.removeItem("pokemon_user");
+        return null;
       }
     }
-    setLoading(false);
-  }, []);
+    return null;
+  });
+  const [loading, setLoading] = useState(false); // 동기 작업이므로 false로 시작
+
+  // 더 이상 useEffect 필요 없음 - 초기화 시 바로 처리
 
   const login = (userData) => {
     setUser(userData);
