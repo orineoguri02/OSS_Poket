@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -27,7 +28,9 @@ export default function Header() {
         }}
       />
       <h1 style={{ color: "black", fontWeight: "bold" }}>Pokémon</h1>
-      <img src="/image/cart.png" alt="장바구니" style={{ width: "150px", height: "150px", objectFit: "contain" }} />
+      <Link to="/cart" style={{ cursor: "pointer" }}>
+        <img src="/image/cart.png" alt="장바구니" style={{ width: "150px", height: "150px", objectFit: "contain" }} />
+      </Link>
     </header>
   );
 }
