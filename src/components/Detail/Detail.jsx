@@ -3,8 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows } from "@react-three/drei";
 import ModelLoader from "../../models/ModelLoader";
-import { getCanvasBackground, VIEW_CONFIG, getModelPath } from "../../utils/helpers";
+import {
+  getCanvasBackground,
+  VIEW_CONFIG,
+  getModelPath,
+} from "../../utils/helpers";
 import { getPokemonDetails } from "../../utils/pokeapi";
+import { usePokemon } from "../../contexts/PokemonContext";
+import MyPokemonDropZone from "../MyPokemon/MyPokemonDropZone";
 
 // 모델 등장 애니메이션 (150% -> 100%)
 function AnimatedModel({ modelPath }) {
@@ -79,6 +85,7 @@ export default function Detail() {
   const { id } = useParams();
   const numericId = Number(id);
   const paddedId = String(numericId).padStart(4, "0");
+  const { isPokemonSaved } = usePokemon();
 
   const [info, setInfo] = useState({
     nameKo: `포켓몬 No.${paddedId}`,
@@ -214,11 +221,68 @@ export default function Detail() {
           >
             {/* 3D 포켓몬 모델 */}
             <div
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData("pokemonId", numericId.toString());
+                e.dataTransfer.effectAllowed = "move";
+                e.currentTarget.style.opacity = "0.7";
+              }}
+              onDragEnd={(e) => {
+                e.currentTarget.style.opacity = "1";
+              }}
               style={{
                 width: "100%",
                 flex: "1 1 auto",
+                cursor: "grab",
+                position: "relative",
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.cursor = "grabbing";
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.cursor = "grab";
               }}
             >
+              {isPokemonSaved(numericId) && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "16px",
+                    right: "16px",
+                    backgroundColor: "rgba(59, 130, 246, 0.9)",
+                    color: "white",
+                    padding: "8px 12px",
+                    borderRadius: "20px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    zIndex: 10,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  <span>✓</span>
+                  <span>저장됨</span>
+                </div>
+              )}
+              <div
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  left: "16px",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  padding: "8px 12px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  zIndex: 10,
+                  backdropFilter: "blur(10px)",
+                }}
+              >
+                드래그하여 저장
+              </div>
               <Canvas
                 style={{
                   height: "clamp(300px, 50vh, 600px)",
@@ -452,7 +516,9 @@ export default function Detail() {
           </div>
         </div>
       </div>
+
+      {/* 드래그 앤 드롭 존 */}
+      <MyPokemonDropZone />
     </div>
   );
 }
-
