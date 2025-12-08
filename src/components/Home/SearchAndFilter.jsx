@@ -22,16 +22,17 @@ export default function SearchAndFilter({ onSearchChange, onFilterChange }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        flex: 1,
-        maxWidth: "600px",
-        margin: "0 auto",
-      }}
-    >
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          flex: 1,
+          maxWidth: "600px",
+          margin: "0 auto",
+        }}
+      >
       {/* 검색 입력 필드 */}
       <div
         style={{
@@ -136,6 +137,7 @@ export default function SearchAndFilter({ onSearchChange, onFilterChange }) {
         <span>저장된 것만</span>
       </button>
     </div>
+  </>
   );
 }
 
