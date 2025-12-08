@@ -1,0 +1,225 @@
+newmtl pigeon2:mat25
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_RGB565.png
+newmtl pigeon2:mat26
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_RGB565.png
+newmtl pigeon2:mat27
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_2_RGB565.png
+newmtl pigeon2:mat28
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_RGB565.png
+newmtl pigeon2:mat29
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_4_CMP.png
+newmtl pigeon2:mat30
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_5_RGB565.png
+newmtl pigeon2:mat31
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_6_RGB565.png
+newmtl pigeon2:mat32
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_7_RGB565.png
+newmtl pigeon2:mat33
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_8_RGB565.png
+newmtl pigeon2:mat34
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_9_RGB565.png
+newmtl pigeon2:mat35
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_10_RGB565.png
+newmtl pigeon2:mat36
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_11_RGB565.png
+newmtl pigeon2:mat37
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_12_RGB565.png
+newmtl pigeon2:mat38
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.9960784 0.9960784 0.9960784
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_RGB565.png
+newmtl pigeon2:mat39
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_13_RGB565.png
+newmtl pigeon2:mat40
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_14_CMP.png
+newmtl pigeon2:mat41
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_15_RGB565.png
+newmtl pigeon2:mat42
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_16_RGB565.png
+newmtl pigeon2:mat43
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_17_RGB565.png
+newmtl pigeon2:mat44
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_18_CMP.png
+newmtl pigeon2:mat45
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_19_CMP.png
+newmtl pigeon2:mat46
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_4_CMP.png
+newmtl pigeon2:mat47
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_14_CMP.png
+newmtl pigeon2:mat48
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_14_CMP.png
+newmtl pigeon2:mat49
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_11_RGB565.png

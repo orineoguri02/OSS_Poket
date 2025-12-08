@@ -1,0 +1,36 @@
+// Prisma 스키마 파일
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL") // 또는 DATABASE_URL
+}
+
+model User {
+  user_id   String   @id @db.VarChar(255)
+  email     String   @db.VarChar(255)
+  name      String   @db.VarChar(255)
+  picture   String?  @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  pokemon UserPokemon[]
+
+  @@map("users")
+}
+
+model UserPokemon {
+  id         Int      @id @default(autoincrement())
+  user_id    String   @db.VarChar(255)
+  pokemon_id Int
+  added_at   DateTime @default(now()) @db.Timestamp(6)
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@unique([user_id, pokemon_id])
+  @@index([user_id])
+  @@index([pokemon_id])
+  @@map("user_pokemon")
+}

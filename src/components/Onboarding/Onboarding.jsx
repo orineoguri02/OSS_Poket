@@ -8,9 +8,9 @@ export default function Onboarding() {
 
   const handleClick = () => {
     setIsRotating(true);
-    // 회전 애니메이션 후 메인 화면으로 이동
+    // 회전 애니메이션 후 로그인 화면으로 이동
     setTimeout(() => {
-      navigate("/home");
+      navigate("/login");
     }, 800); // 0.8초 후 이동
   };
 
@@ -29,11 +29,11 @@ export default function Onboarding() {
           />
         ))}
       </div>
-      
+
       <div className={`pokeball-container ${isRotating ? "rotating" : ""}`}>
-        <img 
-          src="/image/pokeball.svg" 
-          alt="Pokeball" 
+        <img
+          src="/image/pokeball.svg"
+          alt="Pokeball"
           className="pokeball-svg"
         />
       </div>
@@ -45,4 +45,3 @@ export default function Onboarding() {
     </div>
   );
 }
-
