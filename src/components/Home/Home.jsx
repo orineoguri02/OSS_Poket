@@ -4,7 +4,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { usePokemon } from "../../contexts/PokemonContext";
 import MyPokemonDropZone from "../MyPokemon/MyPokemonDropZone";
 import Header from "./Header";
-import { getPokemonSpecies } from "../../utils/pokeapi";
+import { getPokemonListData } from "../../utils/pokeapi";
+import { getCardBackground } from "../../utils/helpers";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -17,36 +18,18 @@ export default function Home() {
   const [allPokemon, setAllPokemon] = useState([]);
   const [isLoadingPokemon, setIsLoadingPokemon] = useState(true);
 
-  // 앱 시작 시 한 번만 모든 포켓몬 데이터 로드
+  // 앱 시작 시 한 번만 모든 포켓몬 데이터 로드 (캐시 적용)
   useEffect(() => {
     const loadAllPokemon = async () => {
       setIsLoadingPokemon(true);
-      const pokemonList = [];
-      const batchSize = 20;
-      
-      for (let id = 1; id <= 151; id += batchSize) {
-        const batch = Array.from(
-          { length: Math.min(batchSize, 152 - id) },
-          (_, i) => id + i
-        );
-        
-        const promises = batch.map(async (pokemonId) => {
-          try {
-            const species = await getPokemonSpecies(pokemonId);
-            const nameKo = species.names?.find((n) => n.language.name === 'ko')?.name || `포켓몬 ${pokemonId}`;
-            return { id: pokemonId, name: nameKo };
-          } catch (error) {
-            console.error(`포켓몬 ${pokemonId} 로드 실패:`, error);
-            return { id: pokemonId, name: `포켓몬 ${pokemonId}` };
-          }
-        });
-        
-        const results = await Promise.all(promises);
-        pokemonList.push(...results);
+      try {
+        const pokemonList = await getPokemonListData(1, 151);
+        setAllPokemon(pokemonList);
+      } catch (error) {
+        console.error('포켓몬 데이터 로드 실패:', error);
+      } finally {
+        setIsLoadingPokemon(false);
       }
-      
-      setAllPokemon(pokemonList);
-      setIsLoadingPokemon(false);
     };
 
     loadAllPokemon();
@@ -306,19 +289,19 @@ export default function Home() {
               onDragStart={(e) => handleDragStart(e, pokemon.id)}
               onDragEnd={handleDragEnd}
               style={{
-                backgroundColor: isPokemonSaved(pokemon.id)
-                  ? "rgba(59, 130, 246, 0.1)"
-                  : "white",
+                background: getCardBackground(pokemon.types),
                 borderRadius: "15px",
                 padding: "10px",
-                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                boxShadow: isPokemonSaved(pokemon.id)
+                  ? "0 4px 12px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0,0,0,0.1)"
+                  : "0 4px 8px rgba(0,0,0,0.1)",
                 textAlign: "center",
-                transition: "transform 0.2s, opacity 0.2s",
+                transition: "transform 0.2s, opacity 0.2s, box-shadow 0.2s",
                 cursor: "grab",
                 position: "relative",
                 border: isPokemonSaved(pokemon.id)
                   ? "2px solid #3b82f6"
-                  : "2px solid transparent",
+                  : "2px solid rgba(255,255,255,0.5)",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
