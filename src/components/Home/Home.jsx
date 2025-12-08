@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePokemon } from "../../contexts/PokemonContext";
 import MyPokemonDropZone from "../MyPokemon/MyPokemonDropZone";
+import Header from "./Header";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -51,8 +52,11 @@ export default function Home() {
         minHeight: "100vh",
         width: "100vw", // 기기 가로 전체 사용
         boxSizing: "border-box", // 패딩 포함해서 100vw 계산
+        paddingTop: "100px", // fixed header 공간 확보
       }}
     >
+      <Header />
+      
       {/* 사용자 정보 및 로그아웃 버튼 */}
       <div
         style={{
@@ -176,9 +180,6 @@ export default function Home() {
         </div>
       </div>
 
-      <h1 style={{ textAlign: "center", color: "#333" }}>
-        포켓몬 도감 (3D Home)
-      </h1>
       <p style={{ textAlign: "center", color: "#666", marginBottom: "30px" }}>
         궁금한 포켓몬을 클릭해서 3D로 자세히 살펴보세요!
       </p>
