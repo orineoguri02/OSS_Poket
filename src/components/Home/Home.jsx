@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Header from "./Header";
 
 export default function Home() {
   // 1번(이상해씨)부터 151번(뮤)까지 1세대 포켓몬 ID 배열 생성
@@ -13,11 +14,11 @@ export default function Home() {
         minHeight: "100vh",
         width: "100vw", // 기기 가로 전체 사용
         boxSizing: "border-box", // 패딩 포함해서 100vw 계산
+        paddingTop: "100px", // fixed header 공간 확보
       }}
-    >
-      <h1 style={{ textAlign: "center", color: "#333" }}>
-        포켓몬 도감 (3D Home)
-      </h1>
+      >
+      <Header />
+
       <p style={{ textAlign: "center", color: "#666", marginBottom: "30px" }}>
         궁금한 포켓몬을 클릭해서 3D로 자세히 살펴보세요!
       </p>
