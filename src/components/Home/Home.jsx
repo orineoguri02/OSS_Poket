@@ -56,7 +56,7 @@ export default function Home() {
       }}
     >
       <Header />
-      
+
       {/* 사용자 정보 및 로그아웃 버튼 */}
       <div
         style={{
