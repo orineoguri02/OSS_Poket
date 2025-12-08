@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePokemon } from "../../contexts/PokemonContext";
 import MyPokemonDropZone from "../MyPokemon/MyPokemonDropZone";
 import Header from "./Header";
+import { getPokemonSpecies } from "../../utils/pokeapi";
 
 export default function Home() {
   const { user, logout } = useAuth();
   const { isPokemonSaved, myPokemon, removePokemon, loading } = usePokemon();
   const navigate = useNavigate();
   const [hoveredPokemonId, setHoveredPokemonId] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   // 1번(이상해씨)부터 151번(뮤)까지 1세대 포켓몬 ID 배열 생성
   const pokemonIds = Array.from({ length: 151 }, (_, i) => i + 1);
 
@@ -18,10 +20,19 @@ export default function Home() {
     e.dataTransfer.effectAllowed = "move";
     // 드래그 중인 요소에 시각적 피드백
     e.currentTarget.style.opacity = "0.5";
+    // 드래그 시작 시 장바구니 표시
+    setIsDragging(true);
   };
 
   const handleDragEnd = (e) => {
     e.currentTarget.style.opacity = "1";
+    // 드래그 종료 시 장바구니 숨김 (로딩 중이 아닐 때만)
+    // 로딩 중이면 포켓몬볼이 계속 보이도록 유지
+    if (!loading) {
+      setTimeout(() => {
+        setIsDragging(false);
+      }, 300);
+    }
   };
 
   const handleLogout = () => {
@@ -328,7 +339,15 @@ export default function Home() {
       </div>
 
       {/* 드래그 앤 드롭 존 */}
-      <MyPokemonDropZone />
+      <MyPokemonDropZone
+        isVisible={isDragging || loading}
+        onDropComplete={() => {
+          // 로딩이 완료된 후에만 포켓몬볼 숨김
+          if (!loading) {
+            setIsDragging(false);
+          }
+        }}
+      />
     </div>
   );
 }
