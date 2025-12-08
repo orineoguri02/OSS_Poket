@@ -28,7 +28,6 @@ export default function Header({ onSearchChange, onFilterChange }) {
           objectFit: "contain",
         }}
       />
-      <h1 style={{ color: "black", fontWeight: "bold" }}>Pokémon</h1>
       <SearchAndFilter
         onSearchChange={onSearchChange}
         onFilterChange={onFilterChange}
