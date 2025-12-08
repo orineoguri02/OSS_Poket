@@ -1,0 +1,213 @@
+newmtl lambert1
+ illum 2
+ Ka 0 0 0
+ Kd 0.4 0.4 0.4
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl lambert10
+ illum 2
+ Ka 0 0 0
+ Kd 0.4 0.4 0.4
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl lambert11
+ illum 2
+ Ka 0 0 0
+ Kd 0.4 0.4 0.4
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+newmtl poppo2:poppo_yaz07_mat105
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_RGB565.png
+newmtl poppo2:poppo_yaz07_mat106
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_CMP.png
+newmtl poppo2:poppo_yaz07_mat107
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_2_RGB565.png
+newmtl poppo2:poppo_yaz07_mat108
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_RGB565.png
+newmtl poppo2:poppo_yaz07_mat109
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_4_RGB565.png
+newmtl poppo2:poppo_yaz07_mat110
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_5_CMP.png
+newmtl poppo2:poppo_yaz07_mat111
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_6_CMP.png
+newmtl poppo2:poppo_yaz07_mat112
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_7_RGB565.png
+newmtl poppo2:poppo_yaz07_mat113
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_8_RGB565.png
+newmtl poppo2:poppo_yaz07_mat114
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_9_RGB565.png
+newmtl poppo2:poppo_yaz07_mat115
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_10_RGB565.png
+newmtl poppo2:poppo_yaz07_mat116
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_11_RGB565.png
+newmtl poppo2:poppo_yaz07_mat117
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_12_RGB565.png
+newmtl poppo2:poppo_yaz07_mat118
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_13_RGB565.png
+newmtl poppo2:poppo_yaz07_mat119
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_14_CMP.png
+newmtl poppo2:poppo_yaz07_mat120
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_15_CMP.png
+newmtl poppo2:poppo_yaz07_mat121
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_16_RGB565.png
+newmtl poppo2:poppo_yaz07_mat122
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_17_RGB565.png
+newmtl poppo2:poppo_yaz07_mat123
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_18_RGB565.png
+newmtl poppo2:poppo_yaz07_mat124
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.9960784 0.9960784 0.9960784
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_19_RGB565.png
+o2:poppo_yaz07_mat124
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.9960784 0.9960784 0.9960784
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd -clamp on Texture_19_RGB565.png
