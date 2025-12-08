@@ -9,6 +9,7 @@ import Detail from "./components/Detail/Detail";
 import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import MyPokemonPage from "./components/MyPokemon/MyPokemonPage";
+import Cart from "./components/Cart/Cart";
 
 // Google OAuth Client ID (환경 변수에서 가져오거나 직접 설정)
 // Vercel 배포 시 환경 변수로 설정: VITE_GOOGLE_CLIENT_ID
