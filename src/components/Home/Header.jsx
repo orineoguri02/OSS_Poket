@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import SearchAndFilter from "./SearchAndFilter";
 
 export default function Header({ onSearchChange, onFilterChange }) {
@@ -27,8 +28,17 @@ export default function Header({ onSearchChange, onFilterChange }) {
           objectFit: "contain",
         }}
       />
-      <SearchAndFilter onSearchChange={onSearchChange} onFilterChange={onFilterChange} />
-      <img src="/image/cart.png" alt="장바구니" style={{ width: "150px", height: "150px", objectFit: "contain" }} />
+      <SearchAndFilter
+        onSearchChange={onSearchChange}
+        onFilterChange={onFilterChange}
+      />
+      <Link to="/cart" style={{ cursor: "pointer" }}>
+        <img
+          src="/image/cart.png"
+          alt="장바구니"
+          style={{ width: "150px", height: "150px", objectFit: "contain" }}
+        />
+      </Link>
     </header>
   );
 }
