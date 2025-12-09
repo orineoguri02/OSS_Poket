@@ -144,10 +144,22 @@ function extractTextureFromMTL(mtlContent, materialName) {
       // newmtl 다음의 모든 내용을 material name으로 사용 (공백 포함 가능)
       const parts = line.split(/\s+/);
       currentMaterial = parts.slice(1).join(" ");
-    } else if (line.startsWith("map_Kd") && currentMaterial === materialName) {
-      const textureFile = line.split(/\s+/).slice(1).join(" ").trim();
-      if (textureFile && !textures.includes(textureFile)) {
-        textures.push(textureFile);
+    } else if (line.startsWith("map_Kd")) {
+      // 정확한 이름 매칭 또는 부분 매칭
+      const isMatch =
+        currentMaterial === materialName ||
+        (materialName &&
+          currentMaterial &&
+          currentMaterial.includes(materialName)) ||
+        (materialName &&
+          currentMaterial &&
+          materialName.includes(currentMaterial));
+
+      if (isMatch) {
+        const textureFile = line.split(/\s+/).slice(1).join(" ").trim();
+        if (textureFile && !textures.includes(textureFile)) {
+          textures.push(textureFile);
+        }
       }
     }
   }
@@ -233,6 +245,22 @@ function LoadedDAEModel({ modelPath }) {
                 console.log(
                   `[텍스처] MTL에서 추출: ${material.name} -> ${textureFileName}`
                 );
+              } else {
+                // 정확한 이름 매칭 실패 시, material name의 일부로 검색 시도
+                const materialNameParts = material.name.split(/[:_]/);
+                for (const part of materialNameParts) {
+                  if (part.length > 3) {
+                    // MTL 파일 전체에서 해당 부분이 포함된 material 찾기
+                    const allTextures = extractTextureFromMTL(mtlContent, part);
+                    if (allTextures.length > 0) {
+                      textureFileName = allTextures[0];
+                      console.log(
+                        `[텍스처] MTL에서 부분 매칭으로 추출: ${part} -> ${textureFileName}`
+                      );
+                      break;
+                    }
+                  }
+                }
               }
             }
 
@@ -561,6 +589,41 @@ function LoadedDAEModel({ modelPath }) {
                 material.needsUpdate = true;
               }
             } else {
+              // material.map이 없는 경우 - MTL에서 추출한 텍스처 파일명 사용
+              if (textureFileName) {
+                const texturePath = `${baseDir}${textureFileName}`;
+                console.log(
+                  `[텍스처] material.map이 없음, MTL에서 추출한 텍스처 사용: ${texturePath}`
+                );
+
+                const loader = new TextureLoader();
+                loader.load(
+                  texturePath,
+                  (texture) => {
+                    console.log(
+                      `[텍스처] MTL 텍스처 로드 성공: ${texturePath}`
+                    );
+                    material.map = texture;
+                    material.needsUpdate = true;
+                  },
+                  undefined,
+                  (error) => {
+                    console.warn(
+                      `[텍스처] MTL 텍스처 로드 실패: ${texturePath}`,
+                      error
+                    );
+                    // 폴백: 기본 색상 사용
+                    if (!material.color) {
+                      material.color = new Color(0xcccccc);
+                    } else {
+                      material.color.set(0xcccccc);
+                    }
+                    material.needsUpdate = true;
+                  }
+                );
+                return; // 비동기 로딩 중이므로 여기서 종료
+              }
+
               // 텍스처가 없으면 기본 색상 설정
               // 텍스처가 없는 경우에도 모델이 보이도록 색상 설정
               if (
