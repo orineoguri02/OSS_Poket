@@ -1,0 +1,36 @@
+newmtl mat206_1_1_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl raichu_0820_02_mat207_1_1_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_CMP.png
+newmtl mat205_1_1_1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_2_CMP.png
+newmtl raichu_0820_02_mat207_1_1_10
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 1 1 1
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_CMP.png

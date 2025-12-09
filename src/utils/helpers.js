@@ -39,22 +39,100 @@ export const VIEW_CONFIG = {
   target: [0, 0, 0],
 };
 
-// 포켓몬 ID에 따른 모델 경로 가져오기
-export const getModelPath = (pokeId) => {
-  if (pokeId === 1) return "/pokemon/1/pm0001_00_00.dae";
-  if (pokeId === 4) return "/pokemon/4/hitokage.dae";
-  if (pokeId === 5) return "/pokemon/5/lizardo.dae";
-  if (pokeId === 6) return "/pokemon/6/lizardon.dae";
-  if (pokeId === 7) return "/pokemon/7/zenigame.dae";
-  if (pokeId === 8) return "/pokemon/8/kameil.dae";
-  if (pokeId === 9) return "/pokemon/9/kamex.dae";
-  if (pokeId === 10) return "/pokemon/10/caterpie.dae";
-  if (pokeId === 11) return "/pokemon/11/transel.dae";
-  if (pokeId === 12) return "/pokemon/12/Male/butterfree.dae";
-  if (pokeId === 13) return "/pokemon/13/beedle.dae";
-  if (pokeId === 14) return "/pokemon/14/cocoon.dae";
-  if (pokeId === 131) return "/pokemon/131/a131.dae";
+// API 기본 URL (개발 환경에서는 로컬, 프로덕션에서는 Vercel 도메인)
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
-  const fallbackPadded = String(pokeId).padStart(4, "0");
-  return `/pokemon/${pokeId}/pm${fallbackPadded}_00_00.dae`;
+/**
+ * 포켓몬 ID에 따른 모델 경로 가져오기 (API 호출)
+ * API가 실제 파일 시스템을 스캔하여 올바른 경로를 반환하므로,
+ * 프론트엔드에서는 하드코딩 없이 API에만 의존합니다.
+ *
+ * @param {number} pokeId - 포켓몬 ID
+ * @returns {Promise<string>} 모델 경로 또는 CDN URL
+ */
+export const getModelPath = async (pokeId) => {
+  if (Number.isNaN(pokeId) || pokeId < 1) {
+    // 유효하지 않은 ID면 기본 폴백 모델 반환
+    return "/pokemon/131/a131.dae";
+  }
+
+  try {
+    // API에서 모델 정보 조회 (API가 실제 파일을 찾아서 반환)
+    // 기존 api/pokemon/index.js에 모델 조회 기능 추가됨
+    const apiUrl = `${API_BASE_URL}/pokemon?id=${pokeId}`;
+    console.log(`[API 호출] ${apiUrl}`);
+
+    const response = await fetch(apiUrl, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        `[API 오류] ${response.status}:`,
+        errorText.substring(0, 200)
+      );
+      throw new Error(`API 호출 실패: ${response.status}`);
+    }
+
+    // Content-Type 확인
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error(`[API 오류] JSON이 아닌 응답:`, text.substring(0, 200));
+      throw new Error(
+        `API가 JSON을 반환하지 않았습니다. Content-Type: ${contentType}`
+      );
+    }
+
+    const data = await response.json();
+    console.log(`[API 성공] 포켓몬 ${pokeId}번:`, data);
+
+    // 파일이 존재하지 않는 경우 처리
+    if (!data.file_exists || !data.model_path || !data.url) {
+      console.warn(`[경고] 포켓몬 ${pokeId}번 모델 파일이 없습니다.`);
+      if (data.error) {
+        console.warn(`[에러] ${data.error}`);
+      }
+      // 폴백 모델 반환 (131번 라프라스)
+      return "/pokemon/131/a131.dae";
+    }
+
+    // 로컬 경로만 사용 (CDN 제거)
+    if (data.model_path || data.url) {
+      // CDN URL이 아닌 로컬 경로만 사용
+      const finalUrl = data.model_path || data.url;
+
+      // CDN URL인 경우 무시하고 로컬 경로 사용
+      if (finalUrl && !finalUrl.startsWith("http")) {
+        console.log(`[로컬 파일 사용] ${finalUrl}`);
+        return finalUrl;
+      }
+
+      // CDN URL이면 로컬 경로로 변환 시도
+      if (finalUrl && finalUrl.startsWith("http")) {
+        console.warn(`[경고] CDN URL 감지, 로컬 경로로 대체: ${finalUrl}`);
+        // CDN URL에서 로컬 경로 추출 시도
+        const match = finalUrl.match(/pokemon\/(\d+)\/(.+)$/);
+        if (match) {
+          const localPath = `/pokemon/${match[1]}/${match[2]}`;
+          console.log(`[로컬 경로로 변환] ${localPath}`);
+          return localPath;
+        }
+      }
+    }
+
+    // API가 경로를 찾지 못한 경우에만 기본 패턴 사용
+    const fallbackPadded = String(pokeId).padStart(4, "0");
+    return `/pokemon/${pokeId}/pm${fallbackPadded}_00_00.dae`;
+  } catch (error) {
+    console.warn(`모델 경로 조회 실패 (${pokeId}):`, error.message);
+
+    // 네트워크 오류 등으로 API 호출 자체가 실패한 경우에만 기본 패턴 사용
+    // (API가 파일 시스템을 스캔하므로, API가 작동하면 항상 올바른 경로를 반환)
+    const fallbackPadded = String(pokeId).padStart(4, "0");
+    return `/pokemon/${pokeId}/pm${fallbackPadded}_00_00.dae`;
+  }
 };

@@ -1,0 +1,63 @@
+newmtl phong11
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl phong00
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl phong2
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.2352941 0.4588235 0.7607843
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_2_CMP.png
+newmtl phong22
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl phong110
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl phong220
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
+newmtl phong221
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 20
+ d 1
+ Tr 0
+ map_Kd Texture_0_CMP.png
