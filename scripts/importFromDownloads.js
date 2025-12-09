@@ -60,12 +60,18 @@ function findPokemonFolder(pokemonId) {
       .readdirSync(downloadsDir, { withFileTypes: true })
       .filter((dirent) => dirent.isFile() && dirent.name.endsWith(".zip"))
       .map((dirent) => dirent.name)
-      .filter((name) => name.includes(`#${paddedId}`) || name.includes(`#${pokemonId}`));
+      .filter(
+        (name) =>
+          name.includes(`#${paddedId}`) || name.includes(`#${pokemonId}`)
+      );
 
     if (zipFiles.length > 0) {
       const zipPath = path.join(downloadsDir, zipFiles[0]);
-      const extractDir = path.join(downloadsDir, path.basename(zipFiles[0], ".zip"));
-      
+      const extractDir = path.join(
+        downloadsDir,
+        path.basename(zipFiles[0], ".zip")
+      );
+
       // 이미 압축 해제된 폴더가 있으면 그대로 사용
       if (fs.existsSync(extractDir)) {
         return extractDir;
@@ -73,52 +79,62 @@ function findPokemonFolder(pokemonId) {
 
       // 압축 해제 시도
       try {
-        execSync(`unzip -q -o "${zipPath}" -d "${downloadsDir}"`, { stdio: "ignore" });
-        
+        execSync(`unzip -q -o "${zipPath}" -d "${downloadsDir}"`, {
+          stdio: "ignore",
+        });
+
         // 압축 해제 후 폴더 확인
         if (fs.existsSync(extractDir)) {
           return extractDir;
         }
-        
+
         // 폴더 이름이 다를 수 있으므로 다시 찾기
         const folders = fs
           .readdirSync(downloadsDir, { withFileTypes: true })
           .filter((dirent) => dirent.isDirectory())
           .map((dirent) => dirent.name)
           .filter((name) => name.includes(paddedId));
-        
+
         if (folders.length > 0) {
           return path.join(downloadsDir, folders[0]);
         }
-        
+
         // 폴더가 없으면 파일들이 다운로드 폴더 루트에 있을 수 있음
         // 임시 폴더 생성하여 파일들 이동
         if (!fs.existsSync(extractDir)) {
           fs.mkdirSync(extractDir, { recursive: true });
-          
+
           // 해당 포켓몬 관련 파일들 찾아서 이동
-          const files = fs.readdirSync(downloadsDir, { withFileTypes: true })
+          const files = fs
+            .readdirSync(downloadsDir, { withFileTypes: true })
             .filter((dirent) => dirent.isFile())
             .map((dirent) => dirent.name)
             .filter((name) => {
               const lowerName = name.toLowerCase();
               // 모델 파일이나 텍스처 파일인지 확인
-              return MODEL_EXTENSIONS.some(ext => lowerName.endsWith(ext)) ||
-                     lowerName.endsWith(".png") ||
-                     lowerName.endsWith(".jpg") ||
-                     lowerName.endsWith(".jpeg") ||
-                     lowerName.endsWith(".mtl");
+              return (
+                MODEL_EXTENSIONS.some((ext) => lowerName.endsWith(ext)) ||
+                lowerName.endsWith(".png") ||
+                lowerName.endsWith(".jpg") ||
+                lowerName.endsWith(".jpeg") ||
+                lowerName.endsWith(".mtl")
+              );
             });
-          
+
           // 파일명에서 포켓몬 이름 추출 (zip 파일명에서)
           const zipName = path.basename(zipFiles[0], ".zip");
           const pokemonNameMatch = zipName.match(/#\d+\s+(.+)$/);
           if (pokemonNameMatch) {
-            const pokemonName = pokemonNameMatch[1].toLowerCase().replace(/\s+/g, "");
+            const pokemonName = pokemonNameMatch[1]
+              .toLowerCase()
+              .replace(/\s+/g, "");
             // 포켓몬 이름이 포함된 파일들만 이동
             for (const file of files) {
               const lowerFile = file.toLowerCase();
-              if (lowerFile.includes(pokemonName) || lowerFile.match(/texture_\d+\.(png|jpg|jpeg)/i)) {
+              if (
+                lowerFile.includes(pokemonName) ||
+                lowerFile.match(/texture_\d+\.(png|jpg|jpeg)/i)
+              ) {
                 const sourcePath = path.join(downloadsDir, file);
                 const targetPath = path.join(extractDir, file);
                 if (fs.existsSync(sourcePath) && !fs.existsSync(targetPath)) {
@@ -127,7 +143,7 @@ function findPokemonFolder(pokemonId) {
               }
             }
           }
-          
+
           return extractDir;
         }
       } catch (error) {

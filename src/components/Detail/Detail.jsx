@@ -53,7 +53,7 @@ function OrbitControlsWrapper({ viewConfig }) {
 
       if (!hasCompletedOneRotationRef.current) {
         // 한 바퀴를 돌 때까지 3.0 속도 유지
-        controlsRef.current.autoRotateSpeed = 20.0;
+        controlsRef.current.autoRotateSpeed = 15.0;
 
         if (elapsed >= oneRotationTime) {
           hasCompletedOneRotationRef.current = true;
@@ -85,7 +85,30 @@ export default function Detail() {
   const { id } = useParams();
   const numericId = Number(id);
   const paddedId = String(numericId).padStart(4, "0");
-  const { isPokemonSaved } = usePokemon();
+  const { isPokemonSaved, loading } = usePokemon();
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef(null);
+
+  // 드래그 중 마우스 위치 추적
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleDragOver = (e) => {
+      e.preventDefault(); // 기본 동작 방지
+      // 마우스 위치를 정확히 추적 (clientX/Y가 viewport 기준이므로 더 정확)
+      const x = e.clientX ?? 0;
+      const y = e.clientY ?? 0;
+      if (x > 0 && y > 0) {
+        setDragPosition({ x, y });
+      }
+    };
+
+    document.addEventListener("dragover", handleDragOver);
+    return () => {
+      document.removeEventListener("dragover", handleDragOver);
+    };
+  }, [isDragging]);
 
   const [info, setInfo] = useState({
     nameKo: `포켓몬 No.${paddedId}`,
@@ -104,7 +127,6 @@ export default function Detail() {
   });
   const [error, setError] = useState(null);
   const [modelPath, setModelPath] = useState(null); // 초기값은 null (로딩 중)
-  const [isModelLoading, setIsModelLoading] = useState(true);
 
   useEffect(() => {
     const fetchPokemonData = async () => {
@@ -145,24 +167,20 @@ export default function Detail() {
   // 모델 경로 가져오기 (API 호출)
   useEffect(() => {
     const fetchModelPath = async () => {
-      setIsModelLoading(true);
       setModelPath(null); // 로딩 시작 시 null로 설정
 
       if (Number.isNaN(numericId) || numericId < 1) {
         setModelPath("/pokemon/131/a131.dae");
-        setIsModelLoading(false);
         return;
       }
 
       try {
         const path = await getModelPath(numericId);
         setModelPath(path);
-        setIsModelLoading(false);
       } catch (err) {
         console.error("모델 경로 로드 실패:", err);
         // 폴백 모델 사용
         setModelPath("/pokemon/131/a131.dae");
-        setIsModelLoading(false);
       }
     };
 
@@ -251,28 +269,13 @@ export default function Detail() {
           >
             {/* 3D 포켓몬 모델 */}
             <div
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData("pokemonId", numericId.toString());
-                e.dataTransfer.effectAllowed = "move";
-                e.currentTarget.style.opacity = "0.7";
-              }}
-              onDragEnd={(e) => {
-                e.currentTarget.style.opacity = "1";
-              }}
               style={{
                 width: "100%",
                 flex: "1 1 auto",
-                cursor: "grab",
                 position: "relative",
               }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.cursor = "grabbing";
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.cursor = "grab";
-              }}
             >
+              {/* Canvas 위에 표시되는 UI 요소들 (드래그되지 않음) */}
               {isPokemonSaved(numericId) && (
                 <div
                   style={{
@@ -290,6 +293,9 @@ export default function Detail() {
                     alignItems: "center",
                     gap: "6px",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
                   }}
                 >
                   <span>✓</span>
@@ -309,91 +315,207 @@ export default function Detail() {
                   fontWeight: "600",
                   zIndex: 10,
                   backdropFilter: "blur(10px)",
+                  pointerEvents: "none",
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
                 }}
               >
                 드래그하여 저장
               </div>
-              <Canvas
-                style={{
-                  height: "clamp(300px, 50vh, 600px)",
-                  width: "100%",
-                  minHeight: "300px",
+
+              {/* Canvas - 직접 draggable로 설정 */}
+              <div
+                ref={canvasRef}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("pokemonId", numericId.toString());
+                  e.dataTransfer.effectAllowed = "move";
+
+                  // 마우스 위치를 정확히 캡처
+                  const startX = e.clientX || e.pageX || 0;
+                  const startY = e.clientY || e.pageY || 0;
+                  setIsDragging(true);
+                  setDragPosition({ x: startX, y: startY });
+
+                  // 매우 큰 투명한 드래그 이미지 생성 (기본 아이콘 완전히 숨기기)
+                  const emptyImg = new Image();
+                  // 큰 투명 이미지 생성 (200x200)
+                  const canvas = document.createElement("canvas");
+                  canvas.width = 200;
+                  canvas.height = 200;
+                  const ctx = canvas.getContext("2d");
+                  ctx.clearRect(0, 0, 200, 200);
+                  emptyImg.src = canvas.toDataURL();
+
+                  // 드래그 이미지 offset을 중심으로 설정하여 마우스 포인터가 정확히 중심에 오도록
+                  e.dataTransfer.setDragImage(emptyImg, 100, 100);
+
+                  // body에 dragging 클래스 추가
+                  document.body.classList.add("dragging");
                 }}
-                camera={{
-                  position: VIEW_CONFIG.cameraPos,
-                  fov: 45,
-                  near: 0.05,
-                  far: 50000,
+                onDragEnd={(e) => {
+                  setDragPosition({ x: 0, y: 0 });
+                  // body에서 dragging 클래스 제거
+                  document.body.classList.remove("dragging");
+                  e.currentTarget.style.cursor = "grab";
+                  // 드래그 종료 시 장바구니 숨김 (로딩 중이 아닐 때만)
+                  if (!loading) {
+                    setTimeout(() => {
+                      setIsDragging(false);
+                    }, 300);
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  cursor: "grab",
+                  position: "relative",
+                }}
+                onMouseDown={(e) => {
+                  // OrbitControls와의 충돌 방지: 드래그 시작 시에만 처리
+                  if (e.button === 0) {
+                    // 왼쪽 마우스 버튼만
+                    e.currentTarget.style.cursor = "grabbing";
+                  }
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.cursor = "grab";
                 }}
               >
-                <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
-                <ambientLight intensity={1.2} />
-                <directionalLight position={[5, 5, 5]} intensity={1.5} />
-                <directionalLight position={[-5, 3, -5]} intensity={0.8} />
-                <pointLight position={[0, 5, 0]} intensity={0.5} />
-                <Suspense
-                  fallback={
-                    <Html center>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "20px",
-                        }}
-                      >
-                        <img
-                          src="/LoadingImage.png"
-                          alt="Loading"
-                          style={{
-                            width: "200px",
-                            height: "200px",
-                            objectFit: "contain",
-                          }}
-                        />
-                        <h2 style={{ color: "white", margin: 0 }}>loading</h2>
-                      </div>
-                    </Html>
-                  }
+                <Canvas
+                  style={{
+                    height: "clamp(300px, 50vh, 600px)",
+                    width: "100%",
+                    minHeight: "300px",
+                    pointerEvents: "auto",
+                  }}
+                  camera={{
+                    position: VIEW_CONFIG.cameraPos,
+                    fov: 45,
+                    near: 0.05,
+                    far: 50000,
+                  }}
                 >
-                  {modelPath ? (
-                    <>
-                      <AnimatedModel modelPath={modelPath} />
-                      <ContactShadows
-                        position={[0, -1.2, 0]}
-                        opacity={0.35}
-                        scale={20}
-                        blur={2.5}
-                        far={2}
-                      />
-                    </>
-                  ) : (
-                    <Html center>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "20px",
+                  <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
+                  <ambientLight intensity={1.2} />
+                  <directionalLight position={[5, 5, 5]} intensity={1.5} />
+                  <directionalLight position={[-5, 3, -5]} intensity={0.8} />
+                  <pointLight position={[0, 5, 0]} intensity={0.5} />
+                  <Suspense
+                    fallback={
+                      <Html center>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "20px",
+                          }}
+                        >
+                          <img
+                            src="/LoadingImage.png"
+                            alt="Loading"
+                            style={{
+                              width: "200px",
+                              height: "200px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <h2 style={{ color: "white", margin: 0 }}>loading</h2>
+                        </div>
+                      </Html>
+                    }
+                  >
+                    {modelPath ? (
+                      <>
+                        <AnimatedModel modelPath={modelPath} />
+                        <ContactShadows
+                          position={[0, -1.2, 0]}
+                          opacity={0.35}
+                          scale={20}
+                          blur={2.5}
+                          far={2}
+                        />
+                      </>
+                    ) : (
+                      <Html center>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "20px",
+                          }}
+                        >
+                          <img
+                            src="/LoadingImage.png"
+                            alt="Loading"
+                            style={{
+                              width: "200px",
+                              height: "200px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <h2 style={{ color: "white", margin: 0 }}>
+                            모델 로딩 중...
+                          </h2>
+                        </div>
+                      </Html>
+                    )}
+                  </Suspense>
+                </Canvas>
+
+                {/* 드래그 중 회전하는 3D 모델 오버레이 */}
+                {isDragging &&
+                  modelPath &&
+                  dragPosition.x > 0 &&
+                  dragPosition.y > 0 && (
+                    <div
+                      style={{
+                        position: "fixed",
+                        // 마우스 포인터가 정확히 3D 이미지의 중심에 오도록
+                        // left와 top을 마우스 위치로 설정하고 transform으로 중심 맞춤
+                        left: `${dragPosition.x}px`,
+                        top: `${dragPosition.y}px`,
+                        width: "clamp(300px, 50vh, 600px)",
+                        height: "clamp(300px, 50vh, 600px)",
+                        minWidth: "300px",
+                        minHeight: "300px",
+                        // transform을 사용하여 요소의 중심이 마우스 위치에 오도록
+                        transform: "translate(-90%, -80%)",
+                        pointerEvents: "none",
+                        zIndex: 9999,
+                        userSelect: "none",
+                        WebkitUserSelect: "none",
+                        MozUserSelect: "none",
+                        msUserSelect: "none",
+                      }}
+                    >
+                      <Canvas
+                        camera={{
+                          position: VIEW_CONFIG.cameraPos,
+                          fov: 45,
+                          near: 0.05,
+                          far: 50000,
                         }}
                       >
-                        <img
-                          src="/LoadingImage.png"
-                          alt="Loading"
-                          style={{
-                            width: "200px",
-                            height: "200px",
-                            objectFit: "contain",
-                          }}
+                        <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
+                        <ambientLight intensity={1.2} />
+                        <directionalLight
+                          position={[5, 5, 5]}
+                          intensity={1.5}
                         />
-                        <h2 style={{ color: "white", margin: 0 }}>
-                          모델 로딩 중...
-                        </h2>
-                      </div>
-                    </Html>
+                        <directionalLight
+                          position={[-5, 3, -5]}
+                          intensity={0.8}
+                        />
+                        <pointLight position={[0, 5, 0]} intensity={0.5} />
+                        <Suspense fallback={null}>
+                          <AnimatedModel modelPath={modelPath} />
+                        </Suspense>
+                      </Canvas>
+                    </div>
                   )}
-                </Suspense>
-              </Canvas>
+              </div>
             </div>
 
             {/* 정보 카드 */}
@@ -583,7 +705,17 @@ export default function Detail() {
       </div>
 
       {/* 드래그 앤 드롭 존 */}
-      <MyPokemonDropZone />
+      <MyPokemonDropZone
+        isVisible={isDragging}
+        onDropComplete={() => {
+          if (!loading) {
+            setIsDragging(false);
+          }
+        }}
+        onLoadingStart={() => {
+          // 로딩 시작 시에도 드래그 상태 유지
+        }}
+      />
     </div>
   );
 }

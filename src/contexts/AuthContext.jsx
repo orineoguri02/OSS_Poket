@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
     }
     return null;
   });
-  const [loading, setLoading] = useState(false); // 동기 작업이므로 false로 시작
+  const [loading] = useState(false); // 동기 작업이므로 false로 시작
 
   // 더 이상 useEffect 필요 없음 - 초기화 시 바로 처리
 
