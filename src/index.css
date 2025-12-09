@@ -29,6 +29,23 @@ body {
   background-color: #ffffff;
 }
 
+/* 드래그 중 선택 방지 */
+body.dragging {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* 드래그 중 기본 드래그 이미지 숨기기 */
+body.dragging::selection {
+  background: transparent;
+}
+
+body.dragging *::selection {
+  background: transparent;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
