@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePokemon } from "../../contexts/PokemonContext";
 import MyPokemonDropZone from "../MyPokemon/MyPokemonDropZone";
 import Header from "./Header";
+import { getPokemonListData } from "../../utils/pokeapi";
+import { getCardBackground } from "../../utils/helpers";
 
 export default function Home() {
   const { user, logout } = useAuth();
@@ -11,8 +13,52 @@ export default function Home() {
   const navigate = useNavigate();
   const [hoveredPokemonId, setHoveredPokemonId] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-  // 1번(이상해씨)부터 151번(뮤)까지 1세대 포켓몬 ID 배열 생성
-  const pokemonIds = Array.from({ length: 151 }, (_, i) => i + 1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterSavedOnly, setFilterSavedOnly] = useState(false);
+  const [allPokemon, setAllPokemon] = useState([]);
+  const [isLoadingPokemon, setIsLoadingPokemon] = useState(true);
+
+  // 앱 시작 시 한 번만 모든 포켓몬 데이터 로드 (캐시 적용)
+  useEffect(() => {
+    const loadAllPokemon = async () => {
+      setIsLoadingPokemon(true);
+      try {
+        const pokemonList = await getPokemonListData(1, 151);
+        setAllPokemon(pokemonList);
+      } catch (error) {
+        console.error('포켓몬 데이터 로드 실패:', error);
+      } finally {
+        setIsLoadingPokemon(false);
+      }
+    };
+
+    loadAllPokemon();
+  }, []);
+
+  // 검색 및 필터링 - 이미 로드된 데이터에서만 필터링 (API 호출 없음)
+  const displayedPokemon = useMemo(() => {
+    if (isLoadingPokemon) return [];
+    
+    let filtered = [...allPokemon];
+    
+    // 저장된 포켓몬만 보기 필터
+    if (filterSavedOnly) {
+      filtered = filtered.filter((pokemon) => isPokemonSaved(pokemon.id));
+    }
+    
+    // 검색어 필터
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      filtered = filtered.filter((pokemon) => {
+        // 번호로 검색
+        if (pokemon.id.toString().includes(query)) return true;
+        // 이름으로 검색
+        return pokemon.name.toLowerCase().includes(query);
+      });
+    }
+    
+    return filtered;
+  }, [allPokemon, searchQuery, filterSavedOnly, isPokemonSaved, isLoadingPokemon]);
 
   const handleDragStart = (e, pokemonId) => {
     e.dataTransfer.setData("pokemonId", pokemonId.toString());
@@ -65,7 +111,10 @@ export default function Home() {
         paddingTop: "100px", // fixed header 공간 확보
       }}
     >
-      <Header />
+      <Header 
+        onSearchChange={setSearchQuery}
+        onFilterChange={setFilterSavedOnly}
+      />
 
       {/* 사용자 정보 및 로그아웃 버튼 */}
       <div
@@ -194,6 +243,7 @@ export default function Home() {
         궁금한 포켓몬을 클릭해서 3D로 자세히 살펴보세요!
       </p>
 
+
       {/* CSS Grid를 이용한 반응형 그리드 레이아웃 */}
       <div
         style={{
@@ -204,37 +254,60 @@ export default function Home() {
           width: "100%", // 기기 너비에 맞게 가로를 꽉 채움
         }}
       >
-        {pokemonIds.map((id) => (
+        {isLoadingPokemon ? (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              padding: "40px 20px",
+              color: "#666",
+            }}
+          >
+            <p>포켓몬 데이터를 불러오는 중...</p>
+          </div>
+        ) : displayedPokemon.length === 0 ? (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              padding: "40px 20px",
+              color: "#999",
+            }}
+          >
+            <p>검색 결과가 없습니다.</p>
+          </div>
+        ) : (
+          displayedPokemon.map((pokemon) => (
           // Link 컴포넌트: 클릭 시 '/pokemon/{id}' 경로로 이동
           <Link
-            to={`/pokemon/${id}`}
-            key={id}
+            to={`/pokemon/${pokemon.id}`}
+            key={pokemon.id}
             style={{ textDecoration: "none" }}
           >
             <div
               draggable
-              onDragStart={(e) => handleDragStart(e, id)}
+              onDragStart={(e) => handleDragStart(e, pokemon.id)}
               onDragEnd={handleDragEnd}
               style={{
-                backgroundColor: isPokemonSaved(id)
-                  ? "rgba(59, 130, 246, 0.1)"
-                  : "white",
+                background: getCardBackground(pokemon.types),
                 borderRadius: "15px",
                 padding: "10px",
-                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                boxShadow: isPokemonSaved(pokemon.id)
+                  ? "0 4px 12px rgba(59, 130, 246, 0.3), 0 4px 8px rgba(0,0,0,0.1)"
+                  : "0 4px 8px rgba(0,0,0,0.1)",
                 textAlign: "center",
-                transition: "transform 0.2s, opacity 0.2s",
+                transition: "transform 0.2s, opacity 0.2s, box-shadow 0.2s",
                 cursor: "grab",
                 position: "relative",
-                border: isPokemonSaved(id)
+                border: isPokemonSaved(pokemon.id)
                   ? "2px solid #3b82f6"
-                  : "2px solid transparent",
+                  : "2px solid rgba(255,255,255,0.5)",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
                 e.currentTarget.style.cursor = "grab";
-                if (isPokemonSaved(id)) {
-                  setHoveredPokemonId(id);
+                if (isPokemonSaved(pokemon.id)) {
+                  setHoveredPokemonId(pokemon.id);
                 }
               }}
               onMouseLeave={(e) => {
@@ -249,7 +322,7 @@ export default function Home() {
                 e.currentTarget.style.cursor = "grab";
               }}
             >
-              {isPokemonSaved(id) && (
+              {isPokemonSaved(pokemon.id) && (
                 <>
                   <div
                     style={{
@@ -273,9 +346,9 @@ export default function Home() {
                   >
                     ✓
                   </div>
-                  {hoveredPokemonId === id && (
+                  {hoveredPokemonId === pokemon.id && (
                     <button
-                      onClick={(e) => handleRemovePokemon(e, id)}
+                      onClick={(e) => handleRemovePokemon(e, pokemon.id)}
                       disabled={loading}
                       style={{
                         position: "absolute",
@@ -317,8 +390,8 @@ export default function Home() {
               )}
               {/* 포켓몬 공식 일러스트 이미지 */}
               <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
-                alt={`Pokemon ${id}`}
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
+                alt={`Pokemon ${pokemon.id}`}
                 style={{ width: "100%", height: "auto" }}
                 // 이미지 로딩 최적화
                 loading="lazy"
@@ -330,11 +403,12 @@ export default function Home() {
                   fontWeight: "bold",
                 }}
               >
-                No. {id}
+                No. {pokemon.id}
               </p>
             </div>
           </Link>
-        ))}
+          ))
+        )}
       </div>
 
       {/* 드래그 앤 드롭 존 */}

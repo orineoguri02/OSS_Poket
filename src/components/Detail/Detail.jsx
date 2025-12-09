@@ -97,9 +97,14 @@ export default function Detail() {
     category: "포켓몬",
     ability: "-",
     gender: "-",
+    captureRate: "-",
+    rarity: "보통",
+    isLegendary: false,
     cta: "정보 보기",
   });
   const [error, setError] = useState(null);
+  const [modelPath, setModelPath] = useState(null); // 초기값은 null (로딩 중)
+  const [isModelLoading, setIsModelLoading] = useState(true);
 
   useEffect(() => {
     const fetchPokemonData = async () => {
@@ -126,6 +131,9 @@ export default function Detail() {
           category: "??? 포켓몬",
           ability: "-",
           gender: "-",
+          captureRate: "-",
+          rarity: "보통",
+          isLegendary: false,
           cta: "도감 업데이트 알림 받기",
         });
       }
@@ -134,10 +142,32 @@ export default function Detail() {
     fetchPokemonData();
   }, [numericId, paddedId]);
 
-  let modelPath = getModelPath(numericId);
-  if (Number.isNaN(numericId)) {
-    modelPath = "/pokemon/131/a131.dae";
-  }
+  // 모델 경로 가져오기 (API 호출)
+  useEffect(() => {
+    const fetchModelPath = async () => {
+      setIsModelLoading(true);
+      setModelPath(null); // 로딩 시작 시 null로 설정
+
+      if (Number.isNaN(numericId) || numericId < 1) {
+        setModelPath("/pokemon/131/a131.dae");
+        setIsModelLoading(false);
+        return;
+      }
+
+      try {
+        const path = await getModelPath(numericId);
+        setModelPath(path);
+        setIsModelLoading(false);
+      } catch (err) {
+        console.error("모델 경로 로드 실패:", err);
+        // 폴백 모델 사용
+        setModelPath("/pokemon/131/a131.dae");
+        setIsModelLoading(false);
+      }
+    };
+
+    fetchModelPath();
+  }, [numericId]);
 
   const canvasBackground = getCanvasBackground(info.types);
 
@@ -297,8 +327,10 @@ export default function Detail() {
                 }}
               >
                 <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
-                <ambientLight intensity={0.9} />
-                <directionalLight position={[5, 5, 5]} intensity={1.2} />
+                <ambientLight intensity={1.2} />
+                <directionalLight position={[5, 5, 5]} intensity={1.5} />
+                <directionalLight position={[-5, 3, -5]} intensity={0.8} />
+                <pointLight position={[0, 5, 0]} intensity={0.5} />
                 <Suspense
                   fallback={
                     <Html center>
@@ -311,7 +343,7 @@ export default function Detail() {
                         }}
                       >
                         <img
-                          src="/LoadingImage.jpg"
+                          src="/LoadingImage.png"
                           alt="Loading"
                           style={{
                             width: "200px",
@@ -324,14 +356,42 @@ export default function Detail() {
                     </Html>
                   }
                 >
-                  <AnimatedModel modelPath={modelPath} />
-                  <ContactShadows
-                    position={[0, -1.2, 0]}
-                    opacity={0.35}
-                    scale={20}
-                    blur={2.5}
-                    far={2}
-                  />
+                  {modelPath ? (
+                    <>
+                      <AnimatedModel modelPath={modelPath} />
+                      <ContactShadows
+                        position={[0, -1.2, 0]}
+                        opacity={0.35}
+                        scale={20}
+                        blur={2.5}
+                        far={2}
+                      />
+                    </>
+                  ) : (
+                    <Html center>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "20px",
+                        }}
+                      >
+                        <img
+                          src="/LoadingImage.png"
+                          alt="Loading"
+                          style={{
+                            width: "200px",
+                            height: "200px",
+                            objectFit: "contain",
+                          }}
+                        />
+                        <h2 style={{ color: "white", margin: 0 }}>
+                          모델 로딩 중...
+                        </h2>
+                      </div>
+                    </Html>
+                  )}
                 </Suspense>
               </Canvas>
             </div>
@@ -453,6 +513,11 @@ export default function Detail() {
                   { label: "몸무게", value: info.weight },
                   { label: "특성", value: info.ability },
                   { label: "성별", value: info.gender },
+                  {
+                    label: "희귀도",
+                    value: info.isLegendary ? "전설 · 환상" : info.rarity,
+                  },
+                  { label: "포획률", value: info.captureRate },
                 ].map((item) => (
                   <div
                     key={item.label}
