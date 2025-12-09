@@ -8,7 +8,14 @@ export default defineConfig({
     host: true, // 모든 네트워크 인터페이스에서 접근 가능
     port: 5173,
     open: true, // 자동으로 브라우저 열기
-    historyApiFallback: true, // SPA 라우팅을 위한 히스토리 폴백
+    // API 프록시 설정 (npm run dev에서도 API 사용 가능)
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     // 빌드 최적화 설정
