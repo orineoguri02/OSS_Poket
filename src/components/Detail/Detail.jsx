@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html, ContactShadows } from "@react-three/drei";
 import ModelLoader from "../../models/ModelLoader";
@@ -85,7 +85,20 @@ export default function Detail() {
   const { id } = useParams();
   const numericId = Number(id);
   const paddedId = String(numericId).padStart(4, "0");
-  const { isPokemonSaved } = usePokemon();
+  const { isPokemonSaved, loading } = usePokemon();
+  const navigate = useNavigate();
+  const [isDragging, setIsDragging] = useState(false);
+
+  // 이전/다음 포켓몬으로 이동
+  const goToPrevious = () => {
+    if (numericId > 1) {
+      navigate(`/pokemon/${numericId - 1}`);
+    }
+  };
+
+  const goToNext = () => {
+    navigate(`/pokemon/${numericId + 1}`);
+  };
 
   const [info, setInfo] = useState({
     nameKo: `포켓몬 No.${paddedId}`,
@@ -104,7 +117,6 @@ export default function Detail() {
   });
   const [error, setError] = useState(null);
   const [modelPath, setModelPath] = useState(null); // 초기값은 null (로딩 중)
-  const [isModelLoading, setIsModelLoading] = useState(true);
 
   useEffect(() => {
     const fetchPokemonData = async () => {
@@ -145,24 +157,20 @@ export default function Detail() {
   // 모델 경로 가져오기 (API 호출)
   useEffect(() => {
     const fetchModelPath = async () => {
-      setIsModelLoading(true);
       setModelPath(null); // 로딩 시작 시 null로 설정
 
       if (Number.isNaN(numericId) || numericId < 1) {
         setModelPath("/pokemon/131/a131.dae");
-        setIsModelLoading(false);
         return;
       }
 
       try {
         const path = await getModelPath(numericId);
         setModelPath(path);
-        setIsModelLoading(false);
       } catch (err) {
         console.error("모델 경로 로드 실패:", err);
         // 폴백 모델 사용
         setModelPath("/pokemon/131/a131.dae");
-        setIsModelLoading(false);
       }
     };
 
@@ -191,8 +199,93 @@ export default function Detail() {
           flexDirection: "column",
           gap: "24px",
           boxSizing: "border-box",
+          position: "relative",
         }}
       >
+        {/* 왼쪽 화살표 */}
+        <button
+          onClick={goToPrevious}
+          disabled={numericId <= 1}
+          style={{
+            position: "fixed",
+            left: "20px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            padding: "16px 20px",
+            backgroundColor:
+              numericId <= 1
+                ? "rgba(0, 0, 0, 0.2)"
+                : "rgba(255, 255, 255, 0.9)",
+            color: numericId <= 1 ? "rgba(255, 255, 255, 0.5)" : "#0f172a",
+            border: "none",
+            borderRadius: "50%",
+            width: "56px",
+            height: "56px",
+            fontSize: "24px",
+            fontWeight: "bold",
+            cursor: numericId <= 1 ? "not-allowed" : "pointer",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+          }}
+          onMouseEnter={(e) => {
+            if (numericId > 1) {
+              e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 1)";
+              e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (numericId > 1) {
+              e.currentTarget.style.backgroundColor =
+                "rgba(255, 255, 255, 0.9)";
+              e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+            }
+          }}
+        >
+          ←
+        </button>
+
+        {/* 오른쪽 화살표 */}
+        <button
+          onClick={goToNext}
+          style={{
+            position: "fixed",
+            right: "20px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            padding: "16px 20px",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            color: "#0f172a",
+            border: "none",
+            borderRadius: "50%",
+            width: "56px",
+            height: "56px",
+            fontSize: "24px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 1)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+            e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+          }}
+        >
+          →
+        </button>
         <Link
           to="/home"
           style={{
@@ -227,6 +320,8 @@ export default function Detail() {
         <div
           style={{
             width: "100%",
+            maxWidth: "900px",
+            margin: "0 auto",
             minWidth: "280px",
           }}
         >
@@ -251,28 +346,13 @@ export default function Detail() {
           >
             {/* 3D 포켓몬 모델 */}
             <div
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData("pokemonId", numericId.toString());
-                e.dataTransfer.effectAllowed = "move";
-                e.currentTarget.style.opacity = "0.7";
-              }}
-              onDragEnd={(e) => {
-                e.currentTarget.style.opacity = "1";
-              }}
               style={{
                 width: "100%",
                 flex: "1 1 auto",
-                cursor: "grab",
                 position: "relative",
               }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.cursor = "grabbing";
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.cursor = "grab";
-              }}
             >
+              {/* 텍스트 오버레이 - draggable 영역 밖에 배치 */}
               {isPokemonSaved(numericId) && (
                 <div
                   style={{
@@ -290,6 +370,8 @@ export default function Detail() {
                     alignItems: "center",
                     gap: "6px",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                    pointerEvents: "none",
+                    userSelect: "none",
                   }}
                 >
                   <span>✓</span>
@@ -299,8 +381,8 @@ export default function Detail() {
               <div
                 style={{
                   position: "absolute",
-                  top: "16px",
-                  left: "16px",
+                  bottom: "16px",
+                  right: "16px",
                   backgroundColor: "rgba(0, 0, 0, 0.6)",
                   color: "white",
                   padding: "8px 12px",
@@ -309,91 +391,125 @@ export default function Detail() {
                   fontWeight: "600",
                   zIndex: 10,
                   backdropFilter: "blur(10px)",
+                  pointerEvents: "none",
+                  userSelect: "none",
                 }}
               >
                 드래그하여 저장
               </div>
-              <Canvas
-                style={{
-                  height: "clamp(300px, 50vh, 600px)",
-                  width: "100%",
-                  minHeight: "300px",
+
+              {/* Canvas를 별도의 draggable div로 감싸기 */}
+              <div
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("pokemonId", numericId.toString());
+                  e.dataTransfer.effectAllowed = "move";
+                  e.currentTarget.style.opacity = "0.7";
+                  setIsDragging(true);
                 }}
-                camera={{
-                  position: VIEW_CONFIG.cameraPos,
-                  fov: 45,
-                  near: 0.05,
-                  far: 50000,
+                onDragEnd={(e) => {
+                  e.currentTarget.style.opacity = "1";
+                  // 드래그 종료 시 장바구니 숨김 (로딩 중이 아닐 때만)
+                  if (!loading) {
+                    setTimeout(() => {
+                      setIsDragging(false);
+                    }, 300);
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  cursor: "grab",
+                  position: "relative",
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.cursor = "grabbing";
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.cursor = "grab";
                 }}
               >
-                <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
-                <ambientLight intensity={1.2} />
-                <directionalLight position={[5, 5, 5]} intensity={1.5} />
-                <directionalLight position={[-5, 3, -5]} intensity={0.8} />
-                <pointLight position={[0, 5, 0]} intensity={0.5} />
-                <Suspense
-                  fallback={
-                    <Html center>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "20px",
-                        }}
-                      >
-                        <img
-                          src="/LoadingImage.png"
-                          alt="Loading"
-                          style={{
-                            width: "200px",
-                            height: "200px",
-                            objectFit: "contain",
-                          }}
-                        />
-                        <h2 style={{ color: "white", margin: 0 }}>loading</h2>
-                      </div>
-                    </Html>
-                  }
+                <Canvas
+                  style={{
+                    height: "clamp(300px, 50vh, 600px)",
+                    width: "100%",
+                    minHeight: "300px",
+                  }}
+                  camera={{
+                    position: VIEW_CONFIG.cameraPos,
+                    fov: 45,
+                    near: 0.05,
+                    far: 50000,
+                  }}
                 >
-                  {modelPath ? (
-                    <>
-                      <AnimatedModel modelPath={modelPath} />
-                      <ContactShadows
-                        position={[0, -1.2, 0]}
-                        opacity={0.35}
-                        scale={20}
-                        blur={2.5}
-                        far={2}
-                      />
-                    </>
-                  ) : (
-                    <Html center>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: "20px",
-                        }}
-                      >
-                        <img
-                          src="/LoadingImage.png"
-                          alt="Loading"
+                  <OrbitControlsWrapper viewConfig={VIEW_CONFIG} />
+                  <ambientLight intensity={1.2} />
+                  <directionalLight position={[5, 5, 5]} intensity={1.5} />
+                  <directionalLight position={[-5, 3, -5]} intensity={0.8} />
+                  <pointLight position={[0, 5, 0]} intensity={0.5} />
+                  <Suspense
+                    fallback={
+                      <Html center>
+                        <div
                           style={{
-                            width: "200px",
-                            height: "200px",
-                            objectFit: "contain",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "20px",
                           }}
+                        >
+                          <img
+                            src="/LoadingImage.png"
+                            alt="Loading"
+                            style={{
+                              width: "200px",
+                              height: "200px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <h2 style={{ color: "white", margin: 0 }}>loading</h2>
+                        </div>
+                      </Html>
+                    }
+                  >
+                    {modelPath ? (
+                      <>
+                        <AnimatedModel modelPath={modelPath} />
+                        <ContactShadows
+                          position={[0, -1.2, 0]}
+                          opacity={0.35}
+                          scale={20}
+                          blur={2.5}
+                          far={2}
                         />
-                        <h2 style={{ color: "white", margin: 0 }}>
-                          모델 로딩 중...
-                        </h2>
-                      </div>
-                    </Html>
-                  )}
-                </Suspense>
-              </Canvas>
+                      </>
+                    ) : (
+                      <Html center>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "20px",
+                          }}
+                        >
+                          <img
+                            src="/LoadingImage.png"
+                            alt="Loading"
+                            style={{
+                              width: "200px",
+                              height: "200px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <h2 style={{ color: "white", margin: 0 }}>
+                            모델 로딩 중...
+                          </h2>
+                        </div>
+                      </Html>
+                    )}
+                  </Suspense>
+                </Canvas>
+              </div>
             </div>
 
             {/* 정보 카드 */}
@@ -401,6 +517,8 @@ export default function Detail() {
               className="info-card-glass"
               style={{
                 width: "100%",
+                maxWidth: "900px",
+                margin: "0 auto",
                 background:
                   "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.6) 100%)",
                 borderRadius: "clamp(16px, 2vw, 24px)",
@@ -583,7 +701,15 @@ export default function Detail() {
       </div>
 
       {/* 드래그 앤 드롭 존 */}
-      <MyPokemonDropZone />
+      <MyPokemonDropZone
+        isVisible={isDragging || loading}
+        onDropComplete={() => {
+          setIsDragging(false);
+        }}
+        onLoadingStart={() => {
+          setIsDragging(true);
+        }}
+      />
     </div>
   );
 }
