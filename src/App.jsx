@@ -10,6 +10,7 @@ import Login from "./components/Auth/Login";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import MyPokemonPage from "./components/MyPokemon/MyPokemonPage";
 import Cart from "./components/Cart/Cart";
+import PokeMbti from "./components/PokeMbti/PokeMbti";
 
 // Google OAuth Client ID (환경 변수에서 가져오거나 직접 설정)
 // Vercel 배포 시 환경 변수로 설정: VITE_GOOGLE_CLIENT_ID
@@ -77,6 +78,16 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <Cart />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* '/mbti' 경로로 오면 PokeMbti 컴포넌트를 보여줌 (로그인 필요) */}
+              <Route
+                path="/mbti"
+                element={
+                  <ProtectedRoute>
+                    <PokeMbti />
                   </ProtectedRoute>
                 }
               />

@@ -1,162 +1,110 @@
-{
-    "meta": {
-      "version": "1.0",
-      "description": "포켓몬 MBTI 매칭 서비스 로직 설정 파일"
+[
+    {
+      "id": 1,
+      "type": "EI",
+      "question": "드디어 모험의 시작이다! 태초마을을 떠나는 당신의 스타일은?",
+      "answers": [
+        { "text": "친구들을 잔뜩 모아서 왁자지껄하게 떠난다! 파티가 최고지.", "value": "E" },
+        { "text": "조용히 혼자, 혹은 파트너 포켓몬 한 마리와 오붓하게 떠난다.", "value": "I" }
+      ]
     },
-    
-    "quiz_questions": [
-      {
-        "id": 1,
-        "dimension": "EI",
-        "question": "주말이 다가왔습니다. 당신의 계획은?",
-        "answers": [
-          { "text": "친구들을 모아 밖으로 나간다! 시끌벅적한 게 좋아.", "value": "E", "score": 1 },
-          { "text": "밀린 잠을 자거나 혼자만의 취미를 즐긴다.", "value": "I", "score": 1 }
-        ]
-      },
-      {
-        "id": 2,
-        "dimension": "SN",
-        "question": "멍 때릴 때 당신의 머릿속은?",
-        "answers": [
-          { "text": "배고프다... 오늘 점심 뭐 먹지? (현실적)", "value": "S", "score": 1 },
-          { "text": "만약 좀비가 나타나면 어떡하지? (상상)", "value": "N", "score": 1 }
-        ]
-      },
-      {
-        "id": 3,
-        "dimension": "TF",
-        "question": "친구가 고민을 털어놓으며 울고 있습니다. 당신의 반응은?",
-        "answers": [
-          { "text": "왜 우는 거지? 원인을 분석하고 해결책을 준다.", "value": "T", "score": 1 },
-          { "text": "일단 휴지부터 주고 같이 슬퍼해준다.", "value": "F", "score": 1 }
-        ]
-      },
-      {
-        "id": 4,
-        "dimension": "JP",
-        "question": "여행 가기 전날, 당신의 가방 상태는?",
-        "answers": [
-          { "text": "체크리스트대로 완벽하게 싸서 문 앞에 둠.", "value": "J", "score": 1 },
-          { "text": "일단 자고 내일 아침에 눈에 보이는 대로 넣는다.", "value": "P", "score": 1 }
-        ]
-      }
-    ],
-  
-    "pokemon_criteria": {
-      "description": "PokéAPI 데이터를 분석하여 MBTI 속성을 부여하는 기준",
-      "type_mapping": {
-        "E": ["fire", "electric", "fighting", "flying", "dragon"],
-        "I": ["ground", "rock", "ghost", "steel", "ice", "dark"],
-        "N": ["psychic", "ghost", "dragon", "fairy"],
-        "S": ["normal", "bug", "fighting", "rock", "ground"],
-        "T": ["steel", "poison", "dark", "electric", "ice"],
-        "F": ["fairy", "grass", "water", "bug", "normal"]
-      },
-      "stat_rules": {
-        "P": { "stat": "speed", "threshold": 90, "condition": "gte" },
-        "J": { "stat": "defense", "threshold": 80, "condition": "gte" },
-        "E": { "stat": "attack", "threshold": 90, "condition": "gte" },
-        "I": { "stat": "defense", "threshold": 90, "condition": "gte" }
-      }
+    {
+      "id": 2,
+      "type": "SN",
+      "question": "전설의 포켓몬에 대한 소문을 들었다. 당신의 반응은?",
+      "answers": [
+        { "text": "어디서? 몇 시에? 레벨은 몇인데? 구체적인 정보를 찾는다.", "value": "S" },
+        { "text": "와, 그 포켓몬을 만나면 세상의 비밀이 풀릴까? 상상의 나래를 펼친다.", "value": "N" }
+      ]
     },
-  
-    "mbti_results": {
-      "ISTJ": {
-        "title": "청렴결백한 논리주의자",
-        "summary": "책임감이 강하고 현실적인 당신은 믿음직한 동료입니다.",
-        "best_match_pokemon_ids": [306, 377, 212], 
-        "representative_pokemon": "보스로라 (Aggron)"
-      },
-      "ISFJ": {
-        "title": "용감한 수호자",
-        "summary": "조용하고 차분하지만 소중한 사람을 지키는 데는 물불 가리지 않습니다.",
-        "best_match_pokemon_ids": [113, 242, 131],
-        "representative_pokemon": "럭키 (Chansey)"
-      },
-      "INFJ": {
-        "title": "통찰력 있는 선지자",
-        "summary": "조용하지만 샘솟는 영감으로 사람들에게 영향을 줍니다.",
-        "best_match_pokemon_ids": [282, 196, 475],
-        "representative_pokemon": "가디안 (Gardevoir)"
-      },
-      "INTJ": {
-        "title": "용의주도한 전략가",
-        "summary": "상상력이 풍부하며 철두철미한 계획을 세우는 전략가입니다.",
-        "best_match_pokemon_ids": [65, 150, 376],
-        "representative_pokemon": "후딘 (Alakazam)"
-      },
-      "ISTP": {
-        "title": "만능 재주꾼",
-        "summary": "대담하고 현실적인 성향으로 도구를 능숙하게 다룹니다.",
-        "best_match_pokemon_ids": [212, 254, 448],
-        "representative_pokemon": "핫삼 (Scizor)"
-      },
-      "ISFP": {
-        "title": "호기심 많은 예술가",
-        "summary": "말없이 다정하고 온화하며, 현재를 즐길 줄 압니다.",
-        "best_match_pokemon_ids": [143, 133, 154],
-        "representative_pokemon": "잠만보 (Snorlax)"
-      },
-      "INFP": {
-        "title": "열정적인 중재자",
-        "summary": "상냥한 성격과 시적인 감성을 가지고 있습니다.",
-        "best_match_pokemon_ids": [39, 132, 151],
-        "representative_pokemon": "푸린 (Jigglypuff)"
-      },
-      "INTP": {
-        "title": "논리적인 사색가",
-        "summary": "끊임없이 지식을 갈망하며 혁신적인 발명을 좋아합니다.",
-        "best_match_pokemon_ids": [137, 63, 474],
-        "representative_pokemon": "폴리곤 (Porygon)"
-      },
-      "ESTP": {
-        "title": "모험을 즐기는 사업가",
-        "summary": "영리하고 에너지가 넘치며 스릴을 즐깁니다.",
-        "best_match_pokemon_ids": [6, 130, 445],
-        "representative_pokemon": "리자몽 (Charizard)"
-      },
-      "ESFP": {
-        "title": "자유로운 영혼의 연예인",
-        "summary": "주위에 있으면 인생이 지루할 틈이 없습니다.",
-        "best_match_pokemon_ids": [393, 25, 54],
-        "representative_pokemon": "팽도리 (Piplup)"
-      },
-      "ENFP": {
-        "title": "재기발랄한 활동가",
-        "summary": "열정적이고 창의적이며, 웃음이 끊이지 않습니다.",
-        "best_match_pokemon_ids": [25, 133, 175],
-        "representative_pokemon": "피카츄 (Pikachu)"
-      },
-      "ENTP": {
-        "title": "뜨거운 논쟁을 즐기는 변론가",
-        "summary": "지적인 도전을 두려워하지 않는 똑똑한 호기심 대장입니다.",
-        "best_match_pokemon_ids": [94, 151, 479],
-        "representative_pokemon": "팬텀 (Gengar)"
-      },
-      "ESTJ": {
-        "title": "엄격한 관리자",
-        "summary": "사물과 사람을 관리하는 데 뛰어난 능력이 있습니다.",
-        "best_match_pokemon_ids": [59, 464, 68],
-        "representative_pokemon": "윈디 (Arcanine)"
-      },
-      "ESFJ": {
-        "title": "사교적인 외교관",
-        "summary": "타인을 돕는 데 열성적이며 인기가 많습니다.",
-        "best_match_pokemon_ids": [35, 113, 184],
-        "representative_pokemon": "삐삐 (Clefairy)"
-      },
-      "ENFJ": {
-        "title": "정의로운 사회운동가",
-        "summary": "카리스마와 충만한 열정을 지닌 타고난 리더입니다.",
-        "best_match_pokemon_ids": [149, 257, 395],
-        "representative_pokemon": "망나뇽 (Dragonite)"
-      },
-      "ENTJ": {
-        "title": "대담한 통솔자",
-        "summary": "상상력이 풍부하며 강한 의지로 길을 개척합니다.",
-        "best_match_pokemon_ids": [150, 445, 373],
-        "representative_pokemon": "뮤츠 (Mewtwo)"
-      }
+    {
+      "id": 3,
+      "type": "TF",
+      "question": "중요한 시합에서 졌다. 위로해주는 친구에게 당신이 듣고 싶은 말은?",
+      "answers": [
+        { "text": "다음엔 물 타입 기술을 써봐. 상성에서 밀렸어. (분석과 조언)", "value": "T" },
+        { "text": "정말 아쉽다... 그래도 너랑 네 포켓몬 진짜 멋졌어! (공감과 위로)", "value": "F" }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "JP",
+      "question": "내일은 체육관 관장에게 도전하는 날! 준비는 어떻게?",
+      "answers": [
+        { "text": "관장의 포켓몬 타입을 분석하고, 카운터 기술을 완벽히 세팅해둔다.", "value": "J" },
+        { "text": "컨디션 조절이 우선! 푹 자고 내일 현장에서 임기응변으로 싸운다.", "value": "P" }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "EI",
+      "question": "길을 걷다 낯선 트레이너와 눈이 마주쳤다!",
+      "answers": [
+        { "text": "안녕? 배틀 한 판 할래? 먼저 말을 걸고 배틀을 신청한다.", "value": "E" },
+        { "text": "못 본 척하거나, 상대가 말을 걸 때까지 기다린다.", "value": "I" }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "SN",
+      "question": "스타팅 포켓몬을 고를 때 당신의 기준은?",
+      "answers": [
+        { "text": "체력, 공격력, 스피드 등 실전 스탯이 짱짱한 녀석.", "value": "S" },
+        { "text": "내 운명의 파트너라는 느낌! 도감 설명이나 생김새의 느낌.", "value": "N" }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "TF",
+      "question": "동료 포켓몬 6마리를 구성할 때 가장 중요한 것은?",
+      "answers": [
+        { "text": "타입 밸런스와 효율. 이기기 위한 최적의 조합을 짠다.", "value": "T" },
+        { "text": "내가 좋아하는 포켓몬, 혹은 나와 유대감이 깊은 아이들.", "value": "F" }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "JP",
+      "question": "모험 도중 갈림길이 나왔다. 지도는 오른쪽이라는데?",
+      "answers": [
+        { "text": "지도가 맞겠지. 계획된 루트인 오른쪽으로 간다.", "value": "J" },
+        { "text": "왼쪽 숲에서 뭔가 느껴져! 계획 변경, 왼쪽으로 가본다.", "value": "P" }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "EI",
+      "question": "포켓몬 콘테스트(장기자랑)가 열렸다. 당신은?",
+      "answers": [
+        { "text": "무대 중앙에서 화려한 기술로 관중의 환호를 즐긴다.", "value": "E" },
+        { "text": "무대 뒤에서 내 포켓몬을 챙겨주거나 관중석에서 구경한다.", "value": "I" }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "SN",
+      "question": "새로운 기술머신(TM)을 주웠다. 어떻게 할까?",
+      "answers": [
+        { "text": "위력과 명중률을 확인하고 지금 당장 쓸모있는지 본다.", "value": "S" },
+        { "text": "이 기술을 배우면 나중에 어떤 콤보가 가능할지 상상해본다.", "value": "N" }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "TF",
+      "question": "악당 로켓단이 나타나 길을 막고 있다. 당신의 생각은?",
+      "answers": [
+        { "text": "저 녀석들의 약점은 뭐지? 가장 효율적으로 제압할 방법을 찾는다.", "value": "T" },
+        { "text": "왜 저런 짓을 하지? 포켓몬들이 불쌍해... 화가 난다.", "value": "F" }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "JP",
+      "question": "여행 가방(인벤토리) 상태는 어떤가요?",
+      "answers": [
+        { "text": "회복약, 몬스터볼 등 종류별로 주머니에 딱딱 정리되어 있다.", "value": "J" },
+        { "text": "일단 다 때려 넣었다. 찾으려면 좀 뒤적거려야 한다.", "value": "P" }
+      ]
     }
-  }
+  ]
