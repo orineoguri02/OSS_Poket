@@ -88,7 +88,7 @@ export default function Home() {
     e.stopPropagation();
 
     if (
-      window.confirm(`포켓몬 No. ${pokemonId}를 장바구니에서 삭제하시겠습니까?`)
+      window.confirm(`포켓몬 No. ${pokemonId}를 삭제하시겠습니까?`)
     ) {
       try {
         await removePokemon(pokemonId);
@@ -115,6 +115,7 @@ export default function Home() {
         onSearchChange={setSearchQuery}
         onFilterChange={setFilterSavedOnly}
       />
+
 
       <p style={{ textAlign: "center", color: "#666", marginBottom: "30px" }}>
         궁금한 포켓몬을 클릭해서 3D로 자세히 살펴보세요!
@@ -221,7 +222,19 @@ export default function Home() {
                         boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                         zIndex: 2,
                       }}
-                      title="저장됨"
+                      onMouseEnter={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.backgroundColor =
+                            "rgba(185, 28, 28, 1)";
+                          e.currentTarget.style.transform = "scale(1.1)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "rgba(220, 38, 38, 0.9)";
+                        e.currentTarget.style.transform = "scale(1)";
+                      }}
+                      title="삭제"
                     >
                       ✓
                     </div>

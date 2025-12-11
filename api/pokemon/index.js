@@ -19,10 +19,24 @@ async function handleModelQuery(req, res, pokemonId) {
   try {
     console.log(`[API] 포켓몬 ${pokemonId}번 모델 정보 조회`);
 
-    // DB에서 모델 정보 조회
-    const model = await prisma.pokemonModel.findUnique({
-      where: { pokemon_id: pokemonId },
-    });
+    // Prisma Client 초기화 확인
+    let model = null;
+    if (prisma && prisma.pokemonModel) {
+      try {
+        // DB에서 모델 정보 조회
+        model = await prisma.pokemonModel.findUnique({
+          where: { pokemon_id: pokemonId },
+        });
+      } catch (dbError) {
+        console.warn("[API] DB 조회 실패, 파일 시스템에서 찾기:", dbError.message);
+        // DB 조회 실패 시 파일 시스템에서 찾기로 진행
+      }
+    } else {
+      console.warn("[API] Prisma Client 또는 pokemonModel이 없습니다. 파일 시스템에서 직접 찾기");
+      if (prisma) {
+        console.log("[API] Prisma Client 모델:", Object.keys(prisma).filter(key => !key.startsWith('$')));
+      }
+    }
 
     if (!model) {
       // DB에 없으면 실제 파일 찾기
@@ -150,6 +164,16 @@ async function handleModelQuery(req, res, pokemonId) {
         storage_type: "local",
         file_exists: true,
         url: modelPath,
+      });
+    }
+
+    // DB에서 모델을 찾은 경우 처리
+    if (!model) {
+      // 이 경우는 위에서 이미 처리되었어야 함
+      console.error("[API] 예상치 못한 상황: model이 null입니다.");
+      return res.status(500).json({
+        error: "서버 오류가 발생했습니다.",
+        details: "모델 정보를 찾을 수 없습니다.",
       });
     }
 
