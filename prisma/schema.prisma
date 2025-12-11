@@ -34,3 +34,20 @@ model UserPokemon {
   @@index([pokemon_id])
   @@map("user_pokemon")
 }
+
+model PokemonModel {
+  id            Int      @id @default(autoincrement())
+  pokemon_id    Int      @unique
+  model_path    String   @db.Text      // 원본 로컬 경로 (예: "/pokemon/1/pm0001_00_00.dae")
+  cdn_url       String?  @db.Text      // CDN URL (예: "https://xxx.vercel-storage.com/pokemon/1/model.dae")
+  model_type    String   @default("dae") // dae, fbx, obj, glb, gltf
+  file_size     Int?                    // 파일 크기 (bytes)
+  storage_type  String   @default("cdn") // "local" | "cdn"
+  is_primary    Boolean  @default(true)  // 여러 모델 중 기본 모델
+  file_exists   Boolean  @default(true)  // 파일 존재 여부
+  created_at    DateTime @default(now()) @db.Timestamp(6)
+  updated_at    DateTime @updatedAt @db.Timestamp(6)
+
+  @@index([pokemon_id])
+  @@map("pokemon_models")
+}

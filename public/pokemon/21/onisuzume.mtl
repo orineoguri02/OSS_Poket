@@ -1,0 +1,162 @@
+newmtl onisuzume2:default1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_RGB565.png
+newmtl onisuzume2:mat1
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_1_RGB565.png
+newmtl onisuzume2:mat2
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_2_RGB565.png
+newmtl onisuzume2:mat3
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_RGB565.png
+newmtl onisuzume2:mat4
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_3_RGB565.png
+newmtl onisuzume2:mat5
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_0_RGB565.png
+newmtl onisuzume2:mat6
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_4_RGB565.png
+newmtl onisuzume2:mat7
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_5_RGB565.png
+newmtl onisuzume2:mat8
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_6_RGB565.png
+newmtl onisuzume2:mat9
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_7_RGB565.png
+newmtl onisuzume2:mat10
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_8_RGB565.png
+newmtl onisuzume2:mat11
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_9_RGB565.png
+newmtl onisuzume2:mat12
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_10_RGB565.png
+newmtl onisuzume2:mat13
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_11_RGB565.png
+newmtl onisuzume2:mat14
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_12_RGB565.png
+newmtl onisuzume2:mat15
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_13_RGB565.png
+newmtl onisuzume2:mat16
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_14_RGB565.png
+newmtl onisuzume2:mat17
+ illum 2
+ Ka 0.5019608 0.5019608 0.5019608
+ Kd 0.8 0.8 0.8
+ Ks 0.227451 0.5137255 0.07058824
+ Ns 50
+ d 1
+ Tr 0
+ map_Kd Texture_15_RGB565.png
