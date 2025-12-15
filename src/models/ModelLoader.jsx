@@ -366,12 +366,47 @@ function LoadedDAEModel({ modelPath }) {
                         // 텍스처 로드 성공
                         console.log(`[텍스처] 로드 성공: ${newPath}`);
 
+                        // 이미지가 완전히 로드되었는지 확인
+                        if (texture.image) {
+                          // 이미지가 아직 로드 중이면 이벤트 리스너 추가
+                          if (!texture.image.complete || texture.image.naturalWidth === 0) {
+                            const onLoad = () => {
+                              console.log(`[텍스처] 이미지 로드 완료: ${newPath}`);
+                              texture.needsUpdate = true;
+                              material.needsUpdate = true;
+                              texture.image.removeEventListener('load', onLoad);
+                              texture.image.removeEventListener('error', onError);
+                            };
+                            const onError = () => {
+                              console.error(`[텍스처] 이미지 로드 실패: ${newPath}`);
+                              texture.image.removeEventListener('load', onLoad);
+                              texture.image.removeEventListener('error', onError);
+                              // 폴백 처리
+                              if (material.map && material.map.dispose) {
+                                material.map.dispose();
+                              }
+                              material.map = null;
+                              if (!material.color) {
+                                material.color = new Color(0xcccccc);
+                              } else {
+                                material.color.set(0xcccccc);
+                              }
+                              material.needsUpdate = true;
+                            };
+                            texture.image.addEventListener('load', onLoad);
+                            texture.image.addEventListener('error', onError);
+                          }
+                        }
+
                         // 기존 텍스처 dispose
                         if (material.map && material.map.dispose) {
                           material.map.dispose();
                         }
 
                         material.map = texture;
+                        // 텍스처 설정 최적화
+                        texture.flipY = false; // DAE 파일은 보통 flipY가 false
+                        texture.colorSpace = 'srgb';
                         material.needsUpdate = true;
                       },
                       undefined, // onProgress
@@ -432,11 +467,43 @@ function LoadedDAEModel({ modelPath }) {
                     newPath,
                     (texture) => {
                       console.log(`[텍스처] MTL 기반 로드 성공: ${newPath}`);
+                      
+                      // 이미지가 완전히 로드되었는지 확인
+                      if (texture.image) {
+                        if (!texture.image.complete || texture.image.naturalWidth === 0) {
+                          const onLoad = () => {
+                            texture.needsUpdate = true;
+                            material.needsUpdate = true;
+                            texture.image.removeEventListener('load', onLoad);
+                            texture.image.removeEventListener('error', onError);
+                          };
+                          const onError = () => {
+                            console.error(`[텍스처] 이미지 로드 실패: ${newPath}`);
+                            texture.image.removeEventListener('load', onLoad);
+                            texture.image.removeEventListener('error', onError);
+                            if (material.map && material.map.dispose) {
+                              material.map.dispose();
+                            }
+                            material.map = null;
+                            if (!material.color) {
+                              material.color = new Color(0xcccccc);
+                            } else {
+                              material.color.set(0xcccccc);
+                            }
+                            material.needsUpdate = true;
+                          };
+                          texture.image.addEventListener('load', onLoad);
+                          texture.image.addEventListener('error', onError);
+                        }
+                      }
+                      
                       // 기존 텍스처 dispose
                       if (material.map && material.map.dispose) {
                         material.map.dispose();
                       }
                       material.map = texture;
+                      texture.flipY = false;
+                      texture.colorSpace = 'srgb';
                       material.needsUpdate = true;
                     },
                     undefined,
@@ -471,6 +538,36 @@ function LoadedDAEModel({ modelPath }) {
                     directPath,
                     (texture) => {
                       console.log(`[텍스처] 직접 로드 성공: ${directPath}`);
+                      
+                      // 이미지가 완전히 로드되었는지 확인
+                      if (texture.image) {
+                        if (!texture.image.complete || texture.image.naturalWidth === 0) {
+                          const onLoad = () => {
+                            texture.needsUpdate = true;
+                            material.needsUpdate = true;
+                            texture.image.removeEventListener('load', onLoad);
+                            texture.image.removeEventListener('error', onError);
+                          };
+                          const onError = () => {
+                            console.error(`[텍스처] 이미지 로드 실패: ${directPath}`);
+                            texture.image.removeEventListener('load', onLoad);
+                            texture.image.removeEventListener('error', onError);
+                            if (material.map && material.map.dispose) {
+                              material.map.dispose();
+                            }
+                            material.map = null;
+                            if (!material.color) {
+                              material.color = new Color(0xcccccc);
+                            } else {
+                              material.color.set(0xcccccc);
+                            }
+                            material.needsUpdate = true;
+                          };
+                          texture.image.addEventListener('load', onLoad);
+                          texture.image.addEventListener('error', onError);
+                        }
+                      }
+                      
                       // 기존 텍스처 dispose
                       if (
                         material.map &&
@@ -480,6 +577,8 @@ function LoadedDAEModel({ modelPath }) {
                         material.map.dispose();
                       }
                       material.map = texture;
+                      texture.flipY = false;
+                      texture.colorSpace = 'srgb';
                       material.needsUpdate = true;
                     },
                     undefined,
@@ -537,10 +636,42 @@ function LoadedDAEModel({ modelPath }) {
                         console.log(
                           `[텍스처] 일반 텍스처 파일 로드 성공: ${texturePath}`
                         );
+                        
+                        // 이미지가 완전히 로드되었는지 확인
+                        if (texture.image) {
+                          if (!texture.image.complete || texture.image.naturalWidth === 0) {
+                            const onLoad = () => {
+                              texture.needsUpdate = true;
+                              material.needsUpdate = true;
+                              texture.image.removeEventListener('load', onLoad);
+                              texture.image.removeEventListener('error', onError);
+                            };
+                            const onError = () => {
+                              console.error(`[텍스처] 이미지 로드 실패: ${texturePath}`);
+                              texture.image.removeEventListener('load', onLoad);
+                              texture.image.removeEventListener('error', onError);
+                              if (material.map && material.map.dispose) {
+                                material.map.dispose();
+                              }
+                              material.map = null;
+                              if (!material.color) {
+                                material.color = new Color(0xcccccc);
+                              } else {
+                                material.color.set(0xcccccc);
+                              }
+                              material.needsUpdate = true;
+                            };
+                            texture.image.addEventListener('load', onLoad);
+                            texture.image.addEventListener('error', onError);
+                          }
+                        }
+                        
                         if (material.map && material.map.dispose) {
                           material.map.dispose();
                         }
                         material.map = texture;
+                        texture.flipY = false;
+                        texture.colorSpace = 'srgb';
                         material.needsUpdate = true;
                       },
                       undefined,
@@ -603,7 +734,36 @@ function LoadedDAEModel({ modelPath }) {
                     console.log(
                       `[텍스처] MTL 텍스처 로드 성공: ${texturePath}`
                     );
+                    
+                    // 이미지가 완전히 로드되었는지 확인
+                    if (texture.image) {
+                      if (!texture.image.complete || texture.image.naturalWidth === 0) {
+                        const onLoad = () => {
+                          texture.needsUpdate = true;
+                          material.needsUpdate = true;
+                          texture.image.removeEventListener('load', onLoad);
+                          texture.image.removeEventListener('error', onError);
+                        };
+                        const onError = () => {
+                          console.error(`[텍스처] 이미지 로드 실패: ${texturePath}`);
+                          texture.image.removeEventListener('load', onLoad);
+                          texture.image.removeEventListener('error', onError);
+                          material.map = null;
+                          if (!material.color) {
+                            material.color = new Color(0xcccccc);
+                          } else {
+                            material.color.set(0xcccccc);
+                          }
+                          material.needsUpdate = true;
+                        };
+                        texture.image.addEventListener('load', onLoad);
+                        texture.image.addEventListener('error', onError);
+                      }
+                    }
+                    
                     material.map = texture;
+                    texture.flipY = false;
+                    texture.colorSpace = 'srgb';
                     material.needsUpdate = true;
                   },
                   undefined,
