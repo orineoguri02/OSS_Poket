@@ -229,6 +229,36 @@ function LoadedDAEModel({ modelPath }) {
         return modelPath.substring(0, lastSlash + 1);
       })();
 
+      // Material-Mesh 매칭 정보 수집
+      const materialMeshMap = [];
+
+      cloned.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const materials = Array.isArray(child.material)
+            ? child.material
+            : [child.material];
+
+          materials.forEach((material) => {
+            materialMeshMap.push({
+              material: material,
+              mesh: child,
+              materialName: material.name || "unknown",
+            });
+          });
+        }
+      });
+
+      console.log(
+        `[디버깅] Material-Mesh 매칭 정보:`,
+        materialMeshMap.map((m) => ({
+          materialName: m.materialName,
+          meshName: m.mesh.name || "unnamed",
+        }))
+      );
+
+      // 텍스처 로딩을 위한 Promise 배열
+      const texturePromises = [];
+
       cloned.traverse((child) => {
         if (child.isMesh && child.material) {
           const materials = Array.isArray(child.material)
@@ -264,395 +294,258 @@ function LoadedDAEModel({ modelPath }) {
               }
             }
 
-            // 텍스처 맵들을 확인하고 경로 수정
+            // material.map 확인
+            let texturePath = null;
             if (material.map) {
-              // material.map이 Texture 객체인지 확인
-              let texturePath = null;
-
-              // Texture 객체의 경우
               if (material.map && typeof material.map === "object") {
-                // image 속성 확인
                 if (material.map.image) {
                   texturePath = material.map.image.src || material.map.image;
-                }
-                // source 속성 확인 (ColladaLoader가 설정)
-                if (!texturePath && material.map.source) {
+                } else if (material.map.source) {
                   texturePath = material.map.source;
-                }
-                // name 속성 확인 (일부 로더가 사용)
-                if (!texturePath && material.map.name) {
+                } else if (material.map.name) {
                   texturePath = material.map.name;
                 }
-              }
-
-              // texturePath가 없으면 material.map 자체를 확인
-              if (!texturePath && typeof material.map === "string") {
+              } else if (typeof material.map === "string") {
                 texturePath = material.map;
               }
+            }
 
-              console.log(`[텍스처] material.map 타입:`, typeof material.map);
-              console.log(`[텍스처] material.map 확인:`, material.map);
+            // 텍스처 경로 결정
+            let finalTexturePath = null;
+
+            // 1. MTL에서 추출한 텍스처 파일명 우선 사용
+            if (textureFileName) {
+              finalTexturePath = `${baseDir}${textureFileName}`;
               console.log(
-                `[텍스처] 추출된 경로: ${texturePath}, baseDir: ${baseDir}`
+                `[텍스처 경로] MTL에서 추출한 텍스처: ${textureFileName} -> ${finalTexturePath} (baseDir: ${baseDir})`
               );
-
-              // material.map이 Texture 객체인데 image가 없거나 로드 실패한 경우
+            }
+            // 2. material.map에서 추출한 경로 사용 (MTL 추출 실패 시)
+            else if (texturePath && typeof texturePath === "string") {
+              // HTTP URL이거나 절대 경로인 경우 그대로 사용
               if (
-                material.map &&
-                typeof material.map === "object" &&
-                !material.map.image
+                texturePath.startsWith("http") ||
+                texturePath.startsWith("/")
               ) {
-                console.warn(
-                  `[텍스처] Texture 객체에 image가 없음, 재로딩 필요`
-                );
-
-                // MTL에서 추출한 텍스처 파일명 사용 (texturePath가 없거나 유효하지 않은 경우)
-                if (
-                  (!texturePath ||
-                    typeof texturePath !== "string" ||
-                    texturePath === "[object Object]") &&
-                  textureFileName
-                ) {
-                  texturePath = textureFileName;
+                // HTTP URL에서 파일명만 추출
+                if (texturePath.startsWith("http")) {
+                  const urlParts = texturePath.split("/");
+                  const fileName = urlParts[urlParts.length - 1];
+                  finalTexturePath = `${baseDir}${fileName}`;
                   console.log(
-                    `[텍스처] MTL에서 추출한 파일명 사용: ${texturePath}`
+                    `[텍스처 경로] HTTP URL에서 파일명 추출: ${texturePath} -> ${finalTexturePath}`
                   );
-                }
-              }
-
-              if (texturePath && typeof texturePath === "string") {
-                console.log(
-                  `[텍스처] 원본 경로: ${texturePath}, baseDir: ${baseDir}`
-                );
-
-                // 이미 http 또는 루트(/)로 시작하는 절대 경로는 건드리지 않음
-                if (
-                  !texturePath.startsWith("http") &&
-                  !texturePath.startsWith("/")
-                ) {
-                  // 상대 경로만 보정
-                  const fileName =
-                    texturePath.split("/").pop() ||
-                    texturePath.split("\\").pop();
-                  const newPath = `${baseDir}${fileName}`;
-
-                  console.log(`[텍스처] 수정된 경로: ${newPath}`);
-
-                  // 텍스처가 이미 올바른 경로로 로드되었는지 확인
-                  const currentSrc =
-                    material.map.image?.src || material.map.source;
-                  const needsNewTexture =
-                    !currentSrc ||
-                    currentSrc !== newPath ||
-                    (material.map.image &&
-                      material.map.image.complete === false);
-
-                  console.log(
-                    `[텍스처] 현재 경로: ${currentSrc}, 새 경로: ${newPath}, 재로딩 필요: ${needsNewTexture}`
-                  );
-
-                  if (needsNewTexture) {
-                    // 기존 색상 저장 (텍스처 실패 시 사용)
-                    const fallbackColor = material.color
-                      ? material.color.clone()
-                      : new Color(0xcccccc);
-
-                    // TextureLoader 사용 (로컬 파일 로딩)
-                    const loader = new TextureLoader();
-
-                    loader.load(
-                      newPath,
-                      (texture) => {
-                        // 텍스처 로드 성공
-                        console.log(`[텍스처] 로드 성공: ${newPath}`);
-
-                        // 기존 텍스처 dispose
-                        if (material.map && material.map.dispose) {
-                          material.map.dispose();
-                        }
-
-                        material.map = texture;
-                        material.needsUpdate = true;
-                      },
-                      undefined, // onProgress
-                      (error) => {
-                        // 텍스처 로드 실패
-                        console.warn(`[텍스처] 로드 실패: ${newPath}`, error);
-                        console.warn(`[텍스처] 원본 경로: ${texturePath}`);
-
-                        // 텍스처 로드 실패 시 저장된 색상 사용
-                        if ("color" in material) {
-                          if (material.color instanceof Color) {
-                            material.color.copy(fallbackColor);
-                          } else {
-                            material.color = fallbackColor.clone();
-                          }
-                        } else {
-                          material.color = fallbackColor.clone();
-                        }
-                        material.map = null; // 텍스처 제거
-                        material.needsUpdate = true; // 머티리얼 업데이트
-                      }
-                    );
-                  } else {
-                    // 이미 올바른 경로로 로드된 경우
-                    console.log(`[텍스처] 이미 로드됨: ${newPath}`);
-                  }
                 } else {
-                  console.log(`[텍스처] 절대 경로 유지: ${texturePath}`);
+                  // 이미 절대 경로인 경우 그대로 사용
+                  finalTexturePath = texturePath;
+                  console.log(
+                    `[텍스처 경로] 절대 경로 유지: ${finalTexturePath}`
+                  );
                 }
               } else {
-                // texturePath가 null이거나 유효하지 않은 경우
-                console.warn(
-                  `[텍스처] 경로 추출 실패 - material.map:`,
-                  material.map
-                );
-
-                // MTL에서 추출한 텍스처 파일명 사용 (texturePath가 없거나 유효하지 않은 경우)
-                let mtlTextureFileName = textureFileName;
-                if (!mtlTextureFileName && mtlContent && material.name) {
-                  const textures = extractTextureFromMTL(
-                    mtlContent,
-                    material.name
-                  );
-                  if (textures.length > 0) {
-                    mtlTextureFileName = textures[0];
-                    console.log(
-                      `[텍스처] MTL에서 추출: ${material.name} -> ${mtlTextureFileName}`
-                    );
-                  }
-                }
-
-                if (mtlTextureFileName) {
-                  const newPath = `${baseDir}${mtlTextureFileName}`;
-                  console.log(`[텍스처] MTL 기반 로드 시도: ${newPath}`);
-
-                  const loader = new TextureLoader();
-                  loader.load(
-                    newPath,
-                    (texture) => {
-                      console.log(`[텍스처] MTL 기반 로드 성공: ${newPath}`);
-                      // 기존 텍스처 dispose
-                      if (material.map && material.map.dispose) {
-                        material.map.dispose();
-                      }
-                      material.map = texture;
-                      material.needsUpdate = true;
-                    },
-                    undefined,
-                    (error) => {
-                      console.warn(
-                        `[텍스처] MTL 기반 로드 실패: ${newPath}`,
-                        error
-                      );
-                      // 기존 텍스처 dispose
-                      if (material.map && material.map.dispose) {
-                        material.map.dispose();
-                      }
-                      material.map = null;
-                      if (!material.color) {
-                        material.color = new Color(0xcccccc);
-                      } else {
-                        material.color.set(0xcccccc);
-                      }
-                      material.needsUpdate = true;
-                    }
-                  );
-                  return; // 비동기 로딩 중이므로 여기서 종료
-                } else if (material.map && typeof material.map === "string") {
-                  // material.map이 문자열인 경우 직접 경로로 사용
-                  const directPath = `${baseDir}${material.map}`;
-                  console.log(
-                    `[텍스처] 문자열 경로로 직접 로드 시도: ${directPath}`
-                  );
-
-                  const loader = new TextureLoader();
-                  loader.load(
-                    directPath,
-                    (texture) => {
-                      console.log(`[텍스처] 직접 로드 성공: ${directPath}`);
-                      // 기존 텍스처 dispose
-                      if (
-                        material.map &&
-                        typeof material.map === "object" &&
-                        material.map.dispose
-                      ) {
-                        material.map.dispose();
-                      }
-                      material.map = texture;
-                      material.needsUpdate = true;
-                    },
-                    undefined,
-                    (error) => {
-                      console.warn(
-                        `[텍스처] 직접 로드 실패: ${directPath}`,
-                        error
-                      );
-                      // 기존 텍스처 dispose
-                      if (
-                        material.map &&
-                        typeof material.map === "object" &&
-                        material.map.dispose
-                      ) {
-                        material.map.dispose();
-                      }
-                      material.map = null;
-                      if (!material.color) {
-                        material.color = new Color(0xcccccc);
-                      } else {
-                        material.color.set(0xcccccc);
-                      }
-                      material.needsUpdate = true;
-                    }
-                  );
-                  return; // 비동기 로딩 중이므로 여기서 종료
-                } else {
-                  // MTL 파일명도 없고 material.map도 문자열이 아니면 baseDir에서 일반 텍스처 파일 찾기 시도
-                  console.log(
-                    `[텍스처] MTL에서 텍스처를 찾지 못함, baseDir에서 일반 텍스처 파일 찾기: ${baseDir}`
-                  );
-
-                  // 일반적인 텍스처 파일명 패턴 시도
-                  const commonTexturePatterns = [
-                    "Texture_1_CMP.png",
-                    "Texture_0_CMP.png",
-                    "Texture_1_RGB565.png",
-                    "Texture_0_RGB565.png",
-                    "Texture_0.png",
-                    "Texture_1.png",
-                  ];
-
-                  const loader = new TextureLoader();
-                  let textureTried = 0;
-
-                  for (const pattern of commonTexturePatterns) {
-                    const texturePath = `${baseDir}${pattern}`;
-                    console.log(
-                      `[텍스처] 일반 텍스처 파일 시도: ${texturePath}`
-                    );
-
-                    loader.load(
-                      texturePath,
-                      (texture) => {
-                        console.log(
-                          `[텍스처] 일반 텍스처 파일 로드 성공: ${texturePath}`
-                        );
-                        if (material.map && material.map.dispose) {
-                          material.map.dispose();
-                        }
-                        material.map = texture;
-                        material.needsUpdate = true;
-                      },
-                      undefined,
-                      () => {
-                        textureTried++;
-                        // 모든 패턴 시도 실패 시 기본 색상 사용
-                        if (textureTried === commonTexturePatterns.length) {
-                          console.warn(
-                            `[텍스처] 모든 텍스처 파일 시도 실패, 기본 색상 사용`
-                          );
-                          if (
-                            material.map &&
-                            typeof material.map === "object" &&
-                            material.map.dispose
-                          ) {
-                            material.map.dispose();
-                          }
-                          material.map = null;
-                          if (!material.color) {
-                            material.color = new Color(0xcccccc);
-                          } else {
-                            material.color.set(0xcccccc);
-                          }
-                          material.needsUpdate = true;
-                        }
-                      }
-                    );
-                  }
-
-                  // 비동기 로딩이므로 여기서는 기본 색상 설정하지 않음
-                  // (로딩 실패 시 콜백에서 처리)
-                }
-
-                // 기본 색상 설정 (텍스처가 없을 때)
-                if (
-                  !material.color ||
-                  (material.color instanceof Color &&
-                    material.color.getHex() === 0xffffff)
-                ) {
-                  if (!material.color) {
-                    material.color = new Color(0xcccccc);
-                  } else {
-                    material.color.set(0xcccccc);
-                  }
-                }
-                material.needsUpdate = true;
-              }
-            } else {
-              // material.map이 없는 경우 - MTL에서 추출한 텍스처 파일명 사용
-              if (textureFileName) {
-                const texturePath = `${baseDir}${textureFileName}`;
+                // 상대 경로인 경우 baseDir과 결합
+                const fileName =
+                  texturePath.split("/").pop() ||
+                  texturePath.split("\\").pop();
+                finalTexturePath = `${baseDir}${fileName}`;
                 console.log(
-                  `[텍스처] material.map이 없음, MTL에서 추출한 텍스처 사용: ${texturePath}`
+                  `[텍스처 경로] 상대 경로 변환: ${texturePath} -> ${finalTexturePath}`
                 );
+              }
+            }
+            // 3. 둘 다 없는 경우 일반적인 텍스처 파일명 패턴 시도
+            else {
+              const commonTexturePatterns = [
+                "Texture_0_RGB565.png",
+                "Texture_1_RGB565.png",
+                "Texture_0_CMP.png",
+                "Texture_1_CMP.png",
+                "Texture_0.png",
+                "Texture_1.png",
+              ];
 
+              // 첫 번째 패턴으로 시도 (실제로는 Promise로 처리)
+              finalTexturePath = `${baseDir}${commonTexturePatterns[0]}`;
+              console.log(
+                `[텍스처 경로] 일반 패턴 시도: ${finalTexturePath}`
+              );
+            }
+
+            // 텍스처 로딩 Promise 생성
+            if (finalTexturePath) {
+              const texturePromise = new Promise((resolve, reject) => {
                 const loader = new TextureLoader();
                 loader.load(
-                  texturePath,
+                  finalTexturePath,
                   (texture) => {
-                    console.log(
-                      `[텍스처] MTL 텍스처 로드 성공: ${texturePath}`
-                    );
-                    material.map = texture;
-                    material.needsUpdate = true;
+                    console.log(`[텍스처] 로드 성공: ${finalTexturePath}`);
+                    resolve({ material, texture, path: finalTexturePath });
                   },
                   undefined,
                   (error) => {
                     console.warn(
-                      `[텍스처] MTL 텍스처 로드 실패: ${texturePath}`,
+                      `[텍스처] 로드 실패: ${finalTexturePath}`,
                       error
                     );
-                    // 폴백: 기본 색상 사용
-                    if (!material.color) {
-                      material.color = new Color(0xcccccc);
-                    } else {
-                      material.color.set(0xcccccc);
-                    }
-                    material.needsUpdate = true;
+                    reject({ material, error, path: finalTexturePath });
                   }
                 );
-                return; // 비동기 로딩 중이므로 여기서 종료
-              }
+              });
 
-              // 텍스처가 없으면 기본 색상 설정
-              // 텍스처가 없는 경우에도 모델이 보이도록 색상 설정
-              if (
-                !material.color ||
-                (material.color instanceof Color &&
-                  material.color.getHex() === 0xffffff)
-              ) {
-                if (!material.color) {
-                  material.color = new Color(0xcccccc);
-                } else {
-                  material.color.set(0xcccccc);
-                }
-              }
-              // 텍스처가 없어도 모델이 보이도록 needsUpdate 설정
-              material.needsUpdate = true;
+              texturePromises.push(texturePromise);
+            } else {
+              // 텍스처 경로를 찾을 수 없는 경우
+              console.warn(
+                `[텍스처] 텍스처 경로를 찾을 수 없음: material.name=${material.name}`
+              );
             }
 
-            // 전체적으로 무광 느낌을 주기 위해 공통 헬퍼 사용
+            // 무광 머티리얼 설정
             makeMaterialMatte(material);
-
-            // 머티리얼 업데이트 플래그 설정
-            material.needsUpdate = true;
           });
         }
       });
 
-      // 크기/위치 정규화
+      // 정규화
       normalizeModel(cloned);
-      setScene(cloned);
+
+      console.log(
+        `[디버깅] 정규화 후 Scene 구조:`,
+        (() => {
+          let total = 0;
+          let withMaterial = 0;
+          let withoutMaterial = 0;
+          cloned.traverse((child) => {
+            if (child.isMesh) {
+              total++;
+              if (child.material) {
+                withMaterial++;
+              } else {
+                withoutMaterial++;
+              }
+            }
+          });
+          return { total, withMaterial, withoutMaterial };
+        })()
+      );
+
+      // 모든 텍스처 로딩 완료 대기
+      console.log(
+        `[디버깅] 총 ${texturePromises.length}개의 텍스처 로딩 Promise 대기 중...`
+      );
+
+      Promise.allSettled(texturePromises).then((results) => {
+        const successful = results.filter((r) => r.status === "fulfilled");
+        const failed = results.filter((r) => r.status === "rejected");
+
+        console.log(
+          `[텍스처] 텍스처 로드 완료: 성공 ${successful.length}개, 실패 ${failed.length}개, scene 설정`
+        );
+
+        const loadedTextures = successful.map((r) => r.value.path);
+        console.log(
+          `[디버깅] 성공적으로 로드된 텍스처 (${successful.length}개):`,
+          loadedTextures
+        );
+
+        // 성공한 텍스처를 머티리얼에 적용
+        successful.forEach((result) => {
+          if (result.status === "fulfilled") {
+            const { material, texture } = result.value;
+
+            // 기존 텍스처 dispose
+            if (material.map && material.map.dispose) {
+              material.map.dispose();
+            }
+
+            // 새 텍스처 적용
+            material.map = texture;
+            material.needsUpdate = true;
+            material.version++;
+
+            console.log(
+              `[텍스처] Material "${material.name}"에 텍스처 적용 완료`
+            );
+          }
+        });
+
+        // 실패한 텍스처에 대한 처리
+        failed.forEach((result) => {
+          if (result.status === "rejected") {
+            const { material } = result.reason;
+            console.warn(
+              `[텍스처] Material "${material.name}"의 텍스처 로드 실패, 기본 색상 사용`
+            );
+
+            // 기본 색상 설정
+            if (!material.color) {
+              material.color = new Color(0xcccccc);
+            } else {
+              material.color.set(0xcccccc);
+            }
+            material.map = null;
+            material.needsUpdate = true;
+          }
+        });
+
+        // HTTP URL 텍스처 재로딩 (이미 로드된 텍스처가 HTTP URL인 경우)
+        cloned.traverse((child) => {
+          if (child.isMesh && child.material) {
+            const materials = Array.isArray(child.material)
+              ? child.material
+              : [child.material];
+
+            materials.forEach((material) => {
+              if (material.map && material.map.image) {
+                const currentSrc = material.map.image.src;
+                if (currentSrc && currentSrc.startsWith("http")) {
+                  // HTTP URL에서 파일명 추출
+                  const urlParts = currentSrc.split("/");
+                  const fileName = urlParts[urlParts.length - 1];
+                  const localPath = `${baseDir}${fileName}`;
+
+                  console.log(
+                    `[텍스처] Material "${material.name}"의 텍스처가 여전히 HTTP URL: ${currentSrc}, 강제 재로딩 시도`
+                  );
+
+                  // 기존 텍스처 dispose
+                  if (material.map && material.map.dispose) {
+                    material.map.dispose();
+                  }
+
+                  // 로컬 경로로 재로딩
+                  const loader = new TextureLoader();
+                  loader.load(
+                    localPath,
+                    (texture) => {
+                      console.log(
+                        `[텍스처] HTTP URL 텍스처 재로딩 성공: ${localPath}`
+                      );
+                      material.map = texture;
+                      material.needsUpdate = true;
+                      material.version++;
+                    },
+                    undefined,
+                    (error) => {
+                      console.warn(
+                        `[텍스처] HTTP URL 텍스처 재로딩 실패: ${localPath}`,
+                        error
+                      );
+                    }
+                  );
+                } else {
+                  console.log(
+                    `[텍스처] 재로딩 후에도 HTTP URL 유지: ${currentSrc}`
+                  );
+                }
+              }
+            });
+          }
+        });
+
+        console.log(`[텍스처] 최종 재로딩 완료, scene 설정`);
+        setScene(cloned);
+      });
     }
   }, [collada, modelPath, loadError, mtlContent]);
 
