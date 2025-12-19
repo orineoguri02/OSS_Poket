@@ -89,7 +89,7 @@ export default function Cart() {
           }}
         >
           <h1 style={{ color: "#333", margin: 0 }}>
-            🛒 장바구니 ({myPokemon.length})
+            포켓몬 박스 ({myPokemon.length})
           </h1>
           <button
             onClick={() => navigate("/home")}

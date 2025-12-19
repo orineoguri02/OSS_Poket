@@ -13,21 +13,26 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
-        {
-          "type": "header",
-          "key": "accept",
-          "value": "text/html"
-        }
-      ]
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/pokemon/(\\d+)/(.+\\.(png|jpg|jpeg|gif|svg|webp|ico|dae|fbx|obj|glb|gltf|mtl|DAE))",
+      "dest": "/pokemon/$1/$2"
+    },
+    {
+      "src": "/(.*\\.(png|jpg|jpeg|gif|svg|webp|ico|dae|fbx|obj|glb|gltf|mtl|DAE))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
