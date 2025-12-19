@@ -13,21 +13,17 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "handle": "filesystem"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
-        {
-          "type": "header",
-          "key": "accept",
-          "value": "text/html"
-        }
-      ]
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [
