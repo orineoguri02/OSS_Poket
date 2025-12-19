@@ -20,12 +20,16 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/pokemon/(.*)",
+      "headers": [
         {
-          "type": "header",
-          "key": "accept",
-          "value": "text/html"
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
