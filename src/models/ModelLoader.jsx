@@ -475,7 +475,7 @@ function LoadedDAEModel({ modelPath }) {
             material.version++;
 
             console.log(
-              `[텍스처] Material "${material.name}"에 텍스처 적용 완료 (colorSpace: ${texture.colorSpace}, flipY: ${texture.flipY})`
+              `[텍스처] Material "${material.name}"에 텍스처 적용 완료`
             );
           }
         });
