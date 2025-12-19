@@ -376,9 +376,7 @@ function LoadedDAEModel({ modelPath }) {
                   finalTexturePath,
                   (texture) => {
                     console.log(`[텍스처] 로드 성공: ${finalTexturePath}`);
-                    // 텍스처 설정 최적화 (배포 환경에서 밝기 문제 해결)
-                    texture.colorSpace = "srgb";
-                    texture.flipY = false;
+                    // 텍스처 기본 설정 (Three.js 기본값 사용)
                     texture.needsUpdate = true;
                     resolve({ material, texture, path: finalTexturePath });
                   },
@@ -459,9 +457,7 @@ function LoadedDAEModel({ modelPath }) {
               material.map.dispose();
             }
 
-            // 텍스처 설정 최적화 (배포 환경에서 밝기 문제 해결)
-            texture.colorSpace = "srgb"; // sRGB 색상 공간 사용
-            texture.flipY = false; // DAE 파일은 일반적으로 flipY가 false
+            // 텍스처 기본 설정 (Three.js 기본값 사용)
             texture.needsUpdate = true;
 
             // 이미지가 완전히 로드되었는지 확인
@@ -536,11 +532,9 @@ function LoadedDAEModel({ modelPath }) {
                       console.log(
                         `[텍스처] HTTP URL 텍스처 재로딩 성공: ${localPath}`
                       );
-                      // 텍스처 설정 최적화 (배포 환경에서 밝기 문제 해결)
-                      texture.colorSpace = "srgb";
-                      texture.flipY = false;
+                      // 텍스처 기본 설정 (Three.js 기본값 사용)
                       texture.needsUpdate = true;
-                      
+
                       material.map = texture;
                       material.needsUpdate = true;
                       material.version++;
