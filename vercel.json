@@ -19,8 +19,15 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/((?!api|pokemon|assets|.*\\.(dae|mtl|png|jpg|jpeg|gif|svg|fbx|obj|glb|gltf|woff|woff2|ttf|eot|css|js|json|ico|webp)).*)",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "text/html"
+        }
+      ]
     }
   ],
   "headers": [
